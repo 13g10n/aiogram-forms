@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "aiogram-forms"
+version = "0.1.0"
+description = "Forms for aiogram"
+authors = ["Ivan Borisenko <i.13g10n@icloud.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/13g10n/aiogram-forms"
+repository = "https://github.com/13g10n/aiogram-forms"
+keywords = ["aiogram", "telegram", "forms"]
+include = [
+    "LICENSE",
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
