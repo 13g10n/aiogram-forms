@@ -1,11 +1,12 @@
 import os
 
 from aiogram import Bot, Dispatcher, executor, types
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 from aiogram_forms import Form, Field
 
 bot = Bot(token=os.getenv('BOT_TOKEN'))
-dp = Dispatcher(bot)
+dp = Dispatcher(bot, storage=MemoryStorage())
 
 
 class UserForm(Form):
@@ -15,7 +16,7 @@ class UserForm(Form):
 
 
 @dp.message_handler(commands="start")
-async def cmd_test1(message: types.Message):
+async def command_start(message: types.Message):
     await UserForm.start()
 
 

@@ -1,0 +1,2 @@
+
+STATES_GROUP_SUFFIX = 'StatesGroup'
