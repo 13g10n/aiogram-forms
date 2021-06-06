@@ -1,6 +1,5 @@
-from aiogram_forms.fields import Field
-from aiogram_forms.forms import Form
+from aiogram_forms import forms, fields, validators
 
 __version__ = '0.1.0'
 
-__all__ = ['Form', 'Field']
+__all__ = ['forms', 'fields', 'validators']

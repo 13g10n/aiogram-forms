@@ -1,4 +1,4 @@
-from typing import List, Type, Tuple
+from typing import List, Type, Tuple, Callable
 
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
@@ -78,6 +78,7 @@ class Form(metaclass=FormMeta):
     _state: Type[StatesGroup] = None
 
     _registered: bool = False
+    _callback: Callable = None
 
     @classmethod
     def _register_handler(cls) -> None:
@@ -99,7 +100,7 @@ class Form(metaclass=FormMeta):
         :return:
         """
         field = await cls.get_current_field()
-        if field.validate(message.text):
+        if await field.validate(message.text):
             await state.update_data(**{field.data_key: message.text})
         else:
             dp = Dispatcher.get_current()
@@ -116,11 +117,13 @@ class Form(metaclass=FormMeta):
             await cls.finish()
 
     @classmethod
-    async def start(cls) -> None:
+    async def start(cls, callback: Callable) -> None:
         """
         Start form processing
         :return:
         """
+        if callback:
+            cls._callback = callback
         cls._register_handler()
         await cls._start_field_promotion(cls._fields[0])
 
@@ -136,7 +139,7 @@ class Form(metaclass=FormMeta):
         await state.set_state(field.state)
         await dp.bot.send_message(
             types.Chat.get_current().id,
-            text=field.promotion
+            text=field.label
         )
 
     @classmethod
@@ -156,10 +159,21 @@ class Form(metaclass=FormMeta):
         Finish form processing
         :return:
         """
-        dp = Dispatcher.get_current()
         state = Dispatcher.get_current().current_state()
-        await state.reset_state()
-        await dp.bot.send_message(
-            types.Chat.get_current().id,
-            text='Done'
-        )
+        await state.reset_state(with_data=False)
+        if cls._callback:
+            await cls._callback()
+
+    @classmethod
+    async def get_data(cls) -> dict:
+        """
+        Get form data for current user
+        :return:
+        """
+        state = Dispatcher.get_current().current_state()
+
+        async with state.proxy() as data:
+            return {
+                field.data_key: data.get(field.data_key)
+                for field in cls._fields
+            }
