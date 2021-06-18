@@ -9,15 +9,15 @@ pip install aiogram-forms
 ```
 
 ## Usage
-Create form you need by subclassing `aiogram_forms.Form`. Fields can be added with `aiogram_forms.Field` 
+Create form you need by subclassing `aiogram_forms.forms.Form`. Fields can be added with `aiogram_forms.fields.Field` 
 ```python
-import aiogram_forms
+from aiogram_forms import forms, fields
 
-class UserForm(aiogram_forms.Form):
+class UserForm(forms.Form):
     """User profile data form"""
-    first_name = aiogram_forms.Field('First name')
-    last_name = aiogram_forms.Field('Last name')
-    email = aiogram_forms.Field('Email', validators=[lambda value: '@' in value])
+    name = fields.StringField('Name')
+    language = fields.StringField('Language', choices=('English', 'Russian', 'Chinese'))
+    email = fields.EmailField('Email')
 ```
 
 ## Code of Conduct

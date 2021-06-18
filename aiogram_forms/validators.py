@@ -1,33 +1,53 @@
-from email.utils import parseaddr
-from typing import Optional, Tuple
+"""
+User input validators
+"""
+import re
+from typing import Optional, Iterable, Set
+
+from .base import BaseValidator
+from .const import EMAIL_REGEXP
 
 
-class Validator:
+class ChoicesValidator(BaseValidator):  # pylint: disable=too-few-public-methods
     """
-    Base validator class
+    Validate user input against set of values
+    """
+    _choices: Optional[Set[str]] = None
+
+    def __init__(self, choices: Optional[Iterable[str]] = None) -> None:
+        self._choices = set(choices) if choices else None
+        super().__init__()
+
+    async def validate(self, value) -> bool:
+        """
+        Validate user input belongs to given list
+        :param value: user input
+        :return: bool
+        """
+        return value in self._choices
+
+
+class RegexValidator(BaseValidator):  # pylint: disable=too-few-public-methods
+    """
+    Validate user input with regular expression check
     """
 
-    async def validate(self, value) -> bool:
-        return True
-
-
-class ChoicesValidator(Validator):
-    _choices: Optional[Tuple[str, str]] = None
-
-    def __init__(self, choices: Optional[Tuple[Tuple[str, str]]] = None, *args, **kwargs):
-        self._choices = choices
-        super().__init__(*args, **kwargs)
+    def __init__(self, regex: str) -> None:
+        self._regex = re.compile(regex)
 
     async def validate(self, value) -> bool:
-        return value in {x[0] for x in self._choices}
+        """
+        Validate value matches regex
+        :param value: user input
+        :return: bool
+        """
+        return bool(self._regex.match(value))
 
 
-class EmailValidator(Validator):
+class EmailValidator(RegexValidator):  # pylint: disable=too-few-public-methods
+    """
+    Validate user input is valid email address
+    """
 
-    async def validate(self, value) -> bool:
-        return self._validate_email(value)
-
-    @staticmethod
-    def _validate_email(value) -> bool:
-        _, email = parseaddr(value)
-        return value == email
+    def __init__(self):
+        super().__init__(EMAIL_REGEXP)

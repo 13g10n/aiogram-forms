@@ -2,6 +2,7 @@ import os
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 from aiogram_forms import forms, fields
 
@@ -10,11 +11,16 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 
 
 class UserForm(forms.Form):
+    LANGUAGE_CHOICES = ('English', 'Russian', 'Chinese')
+
     name = fields.StringField('Name')
-    city = fields.StringField('City', choices=(
-        ('Minsk', 'minsk'),
-        ('Grodno', 'grodno')
-    ))
+    language = fields.StringField(
+        'Language',
+        choices=LANGUAGE_CHOICES,
+        reply_keyboard=ReplyKeyboardMarkup(resize_keyboard=True, row_width=3).add(*[
+            KeyboardButton(label) for label in LANGUAGE_CHOICES
+        ])
+    )
     email = fields.EmailField('Email')
 
 
