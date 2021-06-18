@@ -1,49 +1,37 @@
-from typing import Type, List, Callable
+"""
+Fields of different types to handle different
+user input and validate values
+"""
+from typing import Optional, Iterable
 
-from aiogram import Dispatcher, types
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters.state import StatesGroup, State
-from aiogram.types import Message
+from aiogram_forms import validators
+from aiogram_forms.base import BaseField
+from aiogram_forms.validators import ChoicesValidator
 
 
-class Field:
-    _form: Type['Form'] = None
-    _key: str = None
-    _state = None
+class StringField(BaseField):
+    """
+    Simple string field
+    """
+    _choices: Iterable[str] = None
 
-    _validators = None
+    def __init__(self, *args, choices: Optional[Iterable[str]] = None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if choices:
+            self._validators.append(ChoicesValidator(choices=choices))
 
-    def __init__(
-            self,
-            name: str,
-            validators: List[Callable] = None
-    ):
-        self.name = name
-        self._validators = validators or []
 
-    def __set_name__(self, owner: Type['Form'], name: str):
-        if self._key is None:
-            self._key = name
-        self._form = owner
+class EmailField(StringField):
+    """
+    Email-formatted field
+    """
 
-    @property
-    def promotion(self):
-        return self.name
-
-    @property
-    def state(self):
-        return self._state
-
-    @property
-    def state_label(self):
-        return f'waiting_{self._key}'
-
-    @property
-    def data_key(self):
-        return f'{self._form._name}:{self._key}'
-
-    def validate(self, value):
-        for validator in self._validators:
-            if not validator(value):
-                return False
-        return True
+    def __init__(self, label: str, *args, **kwargs):
+        """
+        Add email format validator to field
+        :param label:
+        :param args:
+        :param kwargs:
+        """
+        kwargs['validators'] = kwargs.get('validators', []) + [validators.EmailValidator()]
+        super().__init__(label, *args, **kwargs)
