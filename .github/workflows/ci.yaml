@@ -14,6 +14,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - uses: Gr1N/setup-poetry@v4
+      - name: Install dependencies
+        run: poetry install
       - name: Lint project files with pylint
         run: poetry run pylint aiogram_forms
   test:
@@ -28,5 +30,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - uses: Gr1N/setup-poetry@v4
+      - name: Install dependencies
+        run: poetry install
       - name: Run tests with pytest
         run: poetry run pytest tests
