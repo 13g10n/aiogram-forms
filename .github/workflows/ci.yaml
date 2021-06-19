@@ -1,9 +1,5 @@
 name: CI
-
-on:
-  pull_request:
-    paths:
-      - 'aiogram_forms/**'
+on: pull_request
 
 jobs:
   lint:
@@ -11,16 +7,30 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8]
+        python-version: [ 3.7 ]
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Setup environment
-        run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-      - name: Install packages
+      - uses: Gr1N/setup-poetry@v4
+      - name: Install dependencies
         run: poetry install
       - name: Lint project files with pylint
         run: poetry run pylint aiogram_forms
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ 3.7 ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: Gr1N/setup-poetry@v4
+      - name: Install dependencies
+        run: poetry install
+      - name: Run tests with pytest
+        run: poetry run pytest tests

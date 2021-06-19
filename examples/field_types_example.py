@@ -12,15 +12,12 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 
 class UserForm(forms.Form):
     LANGUAGE_CHOICES = ('English', 'Russian', 'Chinese')
+    LANGUAGE_KEYBOARD = ReplyKeyboardMarkup(resize_keyboard=True, row_width=3).add(*[
+        KeyboardButton(label) for label in LANGUAGE_CHOICES
+    ])
 
     name = fields.StringField('Name')
-    language = fields.StringField(
-        'Language',
-        choices=LANGUAGE_CHOICES,
-        reply_keyboard=ReplyKeyboardMarkup(resize_keyboard=True, row_width=3).add(*[
-            KeyboardButton(label) for label in LANGUAGE_CHOICES
-        ])
-    )
+    language = fields.ChoicesField('Language', LANGUAGE_CHOICES, reply_keyboard=LANGUAGE_KEYBOARD)
     email = fields.EmailField('Email')
 
 

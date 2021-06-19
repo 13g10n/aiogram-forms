@@ -2,7 +2,7 @@
 Fields of different types to handle different
 user input and validate values
 """
-from typing import Optional, Iterable
+from typing import Iterable
 
 from aiogram_forms import validators
 from aiogram_forms.base import BaseField
@@ -13,12 +13,17 @@ class StringField(BaseField):
     """
     Simple string field
     """
+
+
+class ChoicesField(StringField):
+    """
+    String field with value from given list only
+    """
     _choices: Iterable[str] = None
 
-    def __init__(self, *args, choices: Optional[Iterable[str]] = None, **kwargs):
+    def __init__(self, choices: Iterable[str], *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if choices:
-            self._validators.append(ChoicesValidator(choices=choices))
+        self._validators.append(ChoicesValidator(choices))
 
 
 class EmailField(StringField):
