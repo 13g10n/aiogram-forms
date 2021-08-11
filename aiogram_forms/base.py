@@ -36,6 +36,7 @@ class BaseField(abc.ABC):
 
     _label: str = None
     _validators: List[BaseValidator] = None
+    validation_error_text: str = "Invalid value, try again"
     _reply_keyboard: Optional[Union[
         ReplyKeyboardRemove,
         ReplyKeyboardMarkup
@@ -45,7 +46,8 @@ class BaseField(abc.ABC):
             self,
             label: str,
             validators: Optional[List[BaseValidator]] = None,
-            reply_keyboard: Optional[ReplyKeyboardMarkup] = None
+            reply_keyboard: Optional[ReplyKeyboardMarkup] = None,
+            validation_error_text: str = "Invalid value, try again",
     ):
         """
         Base field constructor
@@ -54,6 +56,7 @@ class BaseField(abc.ABC):
         :param reply_keyboard: keyboard to attach
         """
         self._label = label
+        self.validation_error_text = validation_error_text
 
         self._validators = list(validators) if validators else []
         self._reply_keyboard = reply_keyboard or ReplyKeyboardRemove()
@@ -210,7 +213,7 @@ class BaseForm(metaclass=FormMeta):
             dispatcher = Dispatcher.get_current()
             await dispatcher.bot.send_message(
                 types.Chat.get_current().id,
-                text='Invalid value, try again'
+                text=field.validation_error_text
             )
             return
 
