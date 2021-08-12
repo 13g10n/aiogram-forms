@@ -21,8 +21,8 @@ class ChoicesField(StringField):
     """
     _choices: Iterable[str] = None
 
-    def __init__(self, choices: Iterable[str], *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, label: str, choices: Iterable[str], *args, **kwargs) -> None:
+        super().__init__(label, *args, **kwargs)
         self._validators.append(ChoicesValidator(choices))
 
 
