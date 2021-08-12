@@ -49,5 +49,5 @@ class EmailValidator(RegexValidator):  # pylint: disable=too-few-public-methods
     Validate user input is valid email address
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(EMAIL_REGEXP)

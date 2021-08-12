@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "aiogram-forms"
-version = "0.1.1"
+version = "0.2.0"
 description = "Forms for aiogram"
 authors = ["Ivan Borisenko <i.13g10n@icloud.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/13g10n/aiogram-forms"
+homepage = "https://pypi.org/project/aiogram-forms"
 repository = "https://github.com/13g10n/aiogram-forms"
 keywords = ["aiogram", "telegram", "forms"]
 include = [
