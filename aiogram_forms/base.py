@@ -9,7 +9,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup
 
-from aiogram_forms.const import STATES_GROUP_SUFFIX
+from aiogram_forms.const import STATES_GROUP_SUFFIX, DEFAULT_VALIDATION_ERROR_MESSAGE
 
 
 class BaseValidator(abc.ABC):  # pylint: disable=too-few-public-methods
@@ -30,33 +30,35 @@ class BaseField(abc.ABC):
     """
     Base form field
     """
-    _form: Type['BaseForm'] = None
+    _form: Type['BaseForm']
     _key: str = None
-    _state = None
+    _state: Type[StatesGroup]
 
-    _label: str = None
-    _validators: List[BaseValidator] = None
-    validation_error_text: str = "Invalid value, try again"
-    _reply_keyboard: Optional[Union[
+    _label: str
+    _validation_error_message: str
+
+    _validators: List[BaseValidator]
+    _reply_keyboard: Union[
         ReplyKeyboardRemove,
         ReplyKeyboardMarkup
-    ]] = None
+    ]
 
     def __init__(
             self,
             label: str,
             validators: Optional[List[BaseValidator]] = None,
             reply_keyboard: Optional[ReplyKeyboardMarkup] = None,
-            validation_error_text: str = "Invalid value, try again",
-    ):
+            validation_error_message: Optional[str] = None,
+    ) -> None:
         """
         Base field constructor
         :param label: field name
         :param validators: list of input validators
         :param reply_keyboard: keyboard to attach
+        :param validation_error_message: custom validation message
         """
         self._label = label
-        self.validation_error_text = validation_error_text
+        self._validation_error_message = validation_error_message or DEFAULT_VALIDATION_ERROR_MESSAGE
 
         self._validators = list(validators) if validators else []
         self._reply_keyboard = reply_keyboard or ReplyKeyboardRemove()
@@ -73,7 +75,7 @@ class BaseField(abc.ABC):
         self._form = owner
 
     @property
-    def state(self):
+    def state(self) -> Type[StatesGroup]:
         """
         State property
         :return:
@@ -81,7 +83,7 @@ class BaseField(abc.ABC):
         return self._state
 
     @property
-    def label(self):
+    def label(self) -> str:
         """
         Label property
         :return:
@@ -89,7 +91,7 @@ class BaseField(abc.ABC):
         return self._label
 
     @property
-    def state_label(self):
+    def state_label(self) -> str:
         """
         State label property
         :return:
@@ -97,14 +99,22 @@ class BaseField(abc.ABC):
         return f'waiting_{self._key}'
 
     @property
-    def data_key(self):
+    def data_key(self) -> str:
         """
         Data key property
         :return:
         """
         return f'{self._form.name}:{self._key}'
 
-    async def validate(self, value) -> bool:
+    @property
+    def validation_error(self) -> str:
+        """
+        Field validation error message
+        :return:
+        """
+        return self._validation_error_message
+
+    async def validate(self, value: str) -> bool:
         """
         Validate field value
         :param value: user input
@@ -182,7 +192,7 @@ class BaseForm(metaclass=FormMeta):
     """
     name: str = 'Form'
     _fields: Tuple[BaseField] = tuple()
-    _state: Type[StatesGroup] = None
+    _state: Type[StatesGroup]
 
     _registered: bool = False
     _callback: Callable[[], Awaitable] = None
@@ -213,7 +223,7 @@ class BaseForm(metaclass=FormMeta):
             dispatcher = Dispatcher.get_current()
             await dispatcher.bot.send_message(
                 types.Chat.get_current().id,
-                text=field.validation_error_text
+                text=field.validation_error
             )
             return
 

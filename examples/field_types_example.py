@@ -18,7 +18,7 @@ class UserForm(forms.Form):
 
     name = fields.StringField('Name')
     language = fields.ChoicesField('Language', LANGUAGE_CHOICES, reply_keyboard=LANGUAGE_KEYBOARD)
-    email = fields.EmailField('Email')
+    email = fields.EmailField('Email', validation_error_message='Wrong email format!')
 
 
 @dp.message_handler(commands="start")

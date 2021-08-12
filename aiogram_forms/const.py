@@ -5,3 +5,5 @@ Module constants
 EMAIL_REGEXP = r'[^@]+@[^@]+\.[^@]+'
 
 STATES_GROUP_SUFFIX = 'StatesGroup'
+
+DEFAULT_VALIDATION_ERROR_MESSAGE = 'Invalid value, try again'

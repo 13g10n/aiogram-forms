@@ -31,7 +31,7 @@ class EmailField(StringField):
     Email-formatted field
     """
 
-    def __init__(self, label: str, *args, **kwargs):
+    def __init__(self, label: str, *args, **kwargs) -> None:
         """
         Add email format validator to field
         :param label:
