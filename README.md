@@ -32,3 +32,4 @@ class UserForm(forms.Form):
 
 ## History
 All notable changes to this project will be documented in [CHANGELOG](CHANGELOG.md) file.
+
