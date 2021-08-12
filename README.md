@@ -1,4 +1,8 @@
 # aiogram-forms
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aiogram-forms)
+![PyPI](https://img.shields.io/pypi/v/aiogram-forms)
+![GitHub](https://img.shields.io/github/license/13g10n/aiogram-forms)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/aiogram-forms?label=installs)
 
 ## Introduction
 `aiogram-forms` is an addition for `aiogram` which allows you to create different forms and process user input step by step easily.
@@ -23,10 +27,8 @@ class UserForm(forms.Form):
 
     name = fields.StringField('Name')
     language = fields.ChoicesField('Language', LANGUAGE_CHOICES, reply_keyboard=LANGUAGE_KEYBOARD)
-    email = fields.EmailField('Email')
+    email = fields.EmailField('Email', validation_error_message='Wrong email format!')
 ```
-
-## Code of Conduct
 
 ## History
 All notable changes to this project will be documented in [CHANGELOG](CHANGELOG.md) file.
