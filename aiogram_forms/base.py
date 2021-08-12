@@ -58,7 +58,7 @@ class BaseField(abc.ABC):
         :param validation_error_message: custom validation message
         """
         self._label = label
-        self._validation_error_message = validation_error_message or DEFAULT_VALIDATION_ERROR_MESSAGE
+        self._validation_error_message = validation_error_message or DEFAULT_VALIDATION_ERROR_MESSAGE  # pylint: disable=line-too-long
 
         self._validators = list(validators) if validators else []
         self._reply_keyboard = reply_keyboard or ReplyKeyboardRemove()
