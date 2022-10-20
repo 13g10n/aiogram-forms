@@ -313,7 +313,7 @@ class BaseForm(metaclass=FormMeta):
             }
 
     @classmethod
-    def get_fields(cls) -> tuple['BaseField']:
+    def get_fields(cls) -> Tuple['BaseField']:
         """
         Get form fields.
 
