@@ -13,21 +13,29 @@ pip install aiogram-forms
 ```
 
 ## Usage
-Create form you need by subclassing `aiogram_forms.forms.Form`. Fields can be added with `aiogram_forms.fields.Field` 
+Create form you need by subclassing `aiogram_forms.forms.Form`. Fields can be added with `aiogram_forms.fields.Field`. For more examples refer to `examples` folder.
 ```python
-from aiogram_forms import forms, fields
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+class UserProfileForm(forms.Form):
+    """Example of user details form."""
 
-
-class UserForm(forms.Form):
-    LANGUAGE_CHOICES = ('English', 'Russian', 'Chinese')
-    LANGUAGE_KEYBOARD = ReplyKeyboardMarkup(resize_keyboard=True, row_width=3).add(*[
-        KeyboardButton(label) for label in LANGUAGE_CHOICES
-    ])
-
+    # Simple field usage
     name = fields.StringField('Name')
-    language = fields.ChoicesField('Language', LANGUAGE_CHOICES, reply_keyboard=LANGUAGE_KEYBOARD)
-    email = fields.EmailField('Email', validation_error_message='Wrong email format!')
+    # Using custom validators
+    username = fields.StringField(
+        'Username', validators=[validators.RegexValidator(r'^[a-z0-9_-]{3,15}$')]
+    )
+    # Custom reply keyboard with validation
+    language = fields.ChoicesField(
+        'Language', LANGUAGE_CHOICES, reply_keyboard=LANGUAGE_KEYBOARD
+    )
+    # Custom validation message
+    email = fields.EmailField(
+        'Email', validation_error_message='Wrong email format!'
+    )
+    # Allow user to share contact as reply
+    phone = fields.PhoneNumberField(
+        'Phone', share_contact=True, share_contact_label='Share your contact'
+    )
 ```
 
 ## History

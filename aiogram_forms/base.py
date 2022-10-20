@@ -205,7 +205,16 @@ class BaseForm(metaclass=FormMeta):
         """
         if not cls._registered:
             dispatcher: Dispatcher = Dispatcher.get_current()
-            dispatcher.register_message_handler(cls._handle_input, state=cls.state.states)
+
+            dispatcher.register_message_handler(
+                cls._handle_input,
+                content_types=[
+                    types.ContentType.TEXT,
+                    types.ContentType.CONTACT
+                ],
+                state=cls.state.states
+            )
+
             cls._registered = True
 
     @classmethod
@@ -217,8 +226,14 @@ class BaseForm(metaclass=FormMeta):
         :return:
         """
         field = await cls.get_current_field()
-        if await field.validate(message.text):
-            await state.update_data(**{field.data_key: message.text})
+
+        if message.content_type == types.ContentTypes.CONTACT[0]:
+            value = message.contact.phone_number
+        else:  # types.ContentTypes.TEXT
+            value = message.text
+
+        if await field.validate(value):
+            await state.update_data(**{field.data_key: value})
         else:
             dispatcher = Dispatcher.get_current()
             await dispatcher.bot.send_message(
@@ -296,3 +311,12 @@ class BaseForm(metaclass=FormMeta):
                 field.data_key: data.get(field.data_key)
                 for field in cls._fields
             }
+
+    @classmethod
+    def get_fields(cls) -> Tuple['BaseField']:
+        """
+        Get form fields.
+
+        :returns: Tuple with form fields
+        """
+        return cls._fields
