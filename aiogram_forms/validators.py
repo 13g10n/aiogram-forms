@@ -5,7 +5,6 @@ import re
 from typing import Optional, Iterable, Set
 
 from .base import BaseValidator
-from .const import EMAIL_REGEXP
 
 
 class ChoicesValidator(BaseValidator):  # pylint: disable=too-few-public-methods
@@ -42,12 +41,3 @@ class RegexValidator(BaseValidator):  # pylint: disable=too-few-public-methods
         :return: bool
         """
         return bool(self._regex.match(value))
-
-
-class EmailValidator(RegexValidator):  # pylint: disable=too-few-public-methods
-    """
-    Validate user input is valid email address
-    """
-
-    def __init__(self) -> None:
-        super().__init__(EMAIL_REGEXP)
