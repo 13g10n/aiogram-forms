@@ -32,8 +32,7 @@ class TranslatedForm(forms.Form):
     phone = fields.PhoneNumberField(
         _('Phone'),
         share_contact=True,
-        share_contact_label=_('Share your contact'),
-        validation_error_message=_('Wrong phone format!')
+        share_contact_label=_('Share your contact')
     )
 
 

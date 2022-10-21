@@ -10,33 +10,32 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup
 from babel.support import LazyProxy
 
-from aiogram_forms.const import STATES_GROUP_SUFFIX, DEFAULT_VALIDATION_ERROR_MESSAGE
+from aiogram_forms.const import STATES_GROUP_SUFFIX
+from aiogram_forms.errors import FieldValidationError
+from aiogram_forms.i18n import i18n
 
 
 class BaseValidator(abc.ABC):  # pylint: disable=too-few-public-methods
-    """
-    Base validator class
-    """
+    """Base validator class."""
 
     @abc.abstractmethod
-    async def validate(self, value: str) -> bool:
+    async def validate(self, value: str) -> None:
         """
-        Validate value provided by user
-        :param value: user input
-        :return: bool
+        Validate value provided by user.
+
+        Should raise FieldValidationError with custom message if value not valid.
+
+        :param value: User input
         """
 
 
 class BaseField(abc.ABC):
-    """
-    Base form field
-    """
+    """Base form field."""
     _form: Type['BaseForm']
     _key: str = None
     _state: Type[StatesGroup]
 
     _label: Union[str, LazyProxy]
-    _validation_error_message: Union[str, LazyProxy]
 
     _validators: List[BaseValidator]
     _reply_keyboard: Union[
@@ -49,17 +48,15 @@ class BaseField(abc.ABC):
             label: Union[str, LazyProxy],
             validators: Optional[List[BaseValidator]] = None,
             reply_keyboard: Optional[ReplyKeyboardMarkup] = None,
-            validation_error_message: Optional[Union[str, LazyProxy]] = None,
     ) -> None:
         """
-        Base field constructor
+        Base field constructor.
+
         :param label: field name
         :param validators: list of input validators
         :param reply_keyboard: keyboard to attach
-        :param validation_error_message: custom validation message
         """
         self._label = label
-        self._validation_error_message = validation_error_message or DEFAULT_VALIDATION_ERROR_MESSAGE  # pylint: disable=line-too-long
 
         self._validators = list(validators) if validators else []
         self._reply_keyboard = reply_keyboard or ReplyKeyboardRemove()
@@ -107,24 +104,14 @@ class BaseField(abc.ABC):
         """
         return f'{self._form.name}:{self._key}'
 
-    @property
-    def validation_error(self) -> str:
+    async def validate(self, value: str) -> None:
         """
-        Field validation error message
-        :return:
-        """
-        return self._validation_error_message
+        Validate field value.
 
-    async def validate(self, value: str) -> bool:
-        """
-        Validate field value
-        :param value: user input
-        :return:
+        :param value: User input
         """
         for validator in self._validators:
-            if not await validator.validate(value):
-                return False
-        return True
+            await validator.validate(value)
 
 
 class FormMeta(type):
@@ -200,14 +187,18 @@ class BaseForm(metaclass=FormMeta):
     _callback_args: Iterable[Any] = tuple()
 
     @classmethod
-    def _register_handler(cls) -> None:
+    def _register_i18n(cls, dispatcher: Dispatcher) -> None:
         """
-        Register message handlers for form states
-        :return:
+        Register i18n custom handler.
+        """
+        i18n.register(dispatcher)
+
+    @classmethod
+    def _register_handler(cls, dispatcher: Dispatcher) -> None:
+        """
+        Register message handlers for form states.
         """
         if not cls._registered:
-            dispatcher: Dispatcher = Dispatcher.get_current()
-
             dispatcher.register_message_handler(
                 cls._handle_input,
                 content_types=[
@@ -234,15 +225,17 @@ class BaseForm(metaclass=FormMeta):
         else:  # types.ContentTypes.TEXT
             value = message.text
 
-        if await field.validate(value):
-            await state.update_data(**{field.data_key: value})
-        else:
+        try:
+            await field.validate(value)
+        except FieldValidationError as validation_error:
             dispatcher = Dispatcher.get_current()
             await dispatcher.bot.send_message(
                 types.Chat.get_current().id,
-                text=field.validation_error
+                text=str(validation_error.message)
             )
             return
+
+        await state.update_data(**{field.data_key: value})
 
         next_field_index = cls._fields.index(field) + 1
         if next_field_index < len(cls._fields):
@@ -268,7 +261,9 @@ class BaseForm(metaclass=FormMeta):
         if callback_args:
             cls._callback_args = callback_args
 
-        cls._register_handler()
+        dispatcher: Dispatcher = Dispatcher.get_current()
+        cls._register_i18n(dispatcher)
+        cls._register_handler(dispatcher)
         await cls._start_field_promotion(cls._fields[0])
 
     @classmethod

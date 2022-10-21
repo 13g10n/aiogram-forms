@@ -1,0 +1,32 @@
+# Translations template for aiogram-forms.
+# Copyright (C) 2022 Ivan Borisenko
+# This file is distributed under the same license as the aiogram-forms
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: aiogram-forms 0.4.0\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2022-10-21 16:02+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: aiogram_forms/fields.py:48
+msgid "Invalid email format!"
+msgstr ""
+
+#: aiogram_forms/fields.py:75
+msgid "Invalid phone format!"
+msgstr ""
+
+#: aiogram_forms/validators.py:31
+msgid "Value should be one of the list!"
+msgstr ""
+

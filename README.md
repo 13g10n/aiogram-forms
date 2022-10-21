@@ -41,3 +41,24 @@ class UserProfileForm(forms.Form):
 ## History
 All notable changes to this project will be documented in [CHANGELOG](CHANGELOG.md) file.
 
+## Translating
+
+1. Extract
+```bash
+pybabel extract --input-dirs=aiogram_forms --project=aiogram-forms --version=0.4.0 --copyright-holder="Ivan Borisenko" -o locales/aiogram_forms.pot
+```
+
+2. Create new language
+```bash
+pybabel init -i locales/aiogram_forms.pot -d locales -D aiogram_forms -l ru
+```
+
+2. Or update existing one
+```bash
+pybabel update -d locales -D aiogram_forms -i locales/aiogram_forms.pot
+```
+
+3. Compile
+```bash
+pybabel compile -d locales -D aiogram_forms
+```

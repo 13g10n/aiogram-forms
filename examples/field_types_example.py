@@ -21,18 +21,20 @@ class UserProfileForm(forms.Form):
 
     # Simple field usage
     name = fields.StringField('Name')
-    # Using custom validators
+    # Using generic validator with custom error message
     username = fields.StringField(
-        'Username', validators=[validators.RegexValidator(r'^[a-z0-9_-]{3,15}$')]
+        'Username', validators=[
+            validators.RegexValidator(
+                r'^[a-z0-9_-]{3,15}$',
+                error_message='Username should be 3 to 15 lowercase symbols!'
+            )
+        ]
     )
     # Custom reply keyboard with validation
     language = fields.ChoicesField(
         'Language', LANGUAGE_CHOICES, reply_keyboard=LANGUAGE_KEYBOARD
     )
-    # Custom validation message
-    email = fields.EmailField(
-        'Email', validation_error_message='Wrong email format!'
-    )
+    email = fields.EmailField('Email')
     # Allow user to share contact as reply
     phone = fields.PhoneNumberField(
         'Phone', share_contact=True, share_contact_label='Share your contact'
