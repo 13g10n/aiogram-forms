@@ -2,9 +2,10 @@
 Fields of different types to handle different
 user input and validate values
 """
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Union
 
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
+from babel.support import LazyProxy
 
 from aiogram_forms import validators
 from aiogram_forms.base import BaseField
@@ -19,7 +20,7 @@ class ChoicesField(StringField):
     """Choices field."""
     _choices: Iterable[str] = None
 
-    def __init__(self, label: str, choices: Iterable[str], *args, **kwargs) -> None:
+    def __init__(self, label: Union[str, LazyProxy], choices: Iterable[str], *args, **kwargs) -> None:
         """
         Choices field.
 
@@ -33,7 +34,7 @@ class ChoicesField(StringField):
 class EmailField(StringField):
     """Email field."""
 
-    def __init__(self, label: str, *args, **kwargs) -> None:
+    def __init__(self, label: Union[str, LazyProxy], *args, **kwargs) -> None:
         """
         Email field.
 
@@ -48,10 +49,10 @@ class PhoneNumberField(StringField):
 
     def __init__(
             self,
-            label: str,
+            label: Union[str, LazyProxy],
             *args,
             share_contact: bool = False,
-            share_contact_label: Optional[str] = None,
+            share_contact_label: Optional[Union[str, LazyProxy]] = None,
             **kwargs
     ) -> None:
         """

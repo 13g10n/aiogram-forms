@@ -8,6 +8,7 @@ from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup
+from babel.support import LazyProxy
 
 from aiogram_forms.const import STATES_GROUP_SUFFIX, DEFAULT_VALIDATION_ERROR_MESSAGE
 
@@ -34,8 +35,8 @@ class BaseField(abc.ABC):
     _key: str = None
     _state: Type[StatesGroup]
 
-    _label: str
-    _validation_error_message: str
+    _label: Union[str, LazyProxy]
+    _validation_error_message: Union[str, LazyProxy]
 
     _validators: List[BaseValidator]
     _reply_keyboard: Union[
@@ -45,10 +46,10 @@ class BaseField(abc.ABC):
 
     def __init__(
             self,
-            label: str,
+            label: Union[str, LazyProxy],
             validators: Optional[List[BaseValidator]] = None,
             reply_keyboard: Optional[ReplyKeyboardMarkup] = None,
-            validation_error_message: Optional[str] = None,
+            validation_error_message: Optional[Union[str, LazyProxy]] = None,
     ) -> None:
         """
         Base field constructor
@@ -128,12 +129,12 @@ class BaseField(abc.ABC):
 
 class FormMeta(type):
     """
-    Meta class to handle fields assignments
+    Metaclass to handle fields assignments
     """
 
     def __new__(mcs, name: str, bases: Tuple[Type], namespace: dict, **kwargs: dict) -> Type:  # pylint: disable=unused-argument, bad-mcs-classmethod-argument
         """
-        Class constructor for meta class
+        Class constructor for metaclass
         :param name: Subclass name
         :param bases: List of based classes
         :param namespace: Class namespace
@@ -195,7 +196,7 @@ class BaseForm(metaclass=FormMeta):
     _state: Type[StatesGroup]
 
     _registered: bool = False
-    _callback: Callable[[], Awaitable] = None
+    _callback: Union[Callable[[Any], Awaitable], Callable[[], Awaitable]] = None
     _callback_args: Iterable[Any] = tuple()
 
     @classmethod
