@@ -1,0 +1,34 @@
+# Belarusian translations for aiogram-forms.
+# Copyright (C) 2022 Ivan Borisenko
+# This file is distributed under the same license as the aiogram-forms
+# project.
+# Ivan Borisenko <i.13g10n@icloud.com>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: aiogram-forms 0.4.0\n"
+"Report-Msgid-Bugs-To: i.13g10n@icloud.com\n"
+"POT-Creation-Date: 2022-10-21 16:02+0300\n"
+"PO-Revision-Date: 2022-10-21 16:28+0300\n"
+"Last-Translator: Ivan Borisenko <i.13g10n@icloud.com>\n"
+"Language: be\n"
+"Language-Team: be <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: aiogram_forms/fields.py:48
+msgid "Invalid email format!"
+msgstr "Няправільны фармат пошты!"
+
+#: aiogram_forms/fields.py:75
+msgid "Invalid phone format!"
+msgstr "Няправільны фармат тэлефона!"
+
+#: aiogram_forms/validators.py:31
+msgid "Value should be one of the list!"
+msgstr "Значэнне павінна быць адным з спісу!"
+
