@@ -2,7 +2,7 @@
 Base classes for all components
 """
 import abc
-from typing import Tuple, Type, List, Optional, Union, Callable, Awaitable
+from typing import Tuple, Type, List, Optional, Union, Callable, Awaitable, Any, Iterable
 
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
@@ -196,6 +196,7 @@ class BaseForm(metaclass=FormMeta):
 
     _registered: bool = False
     _callback: Callable[[], Awaitable] = None
+    _callback_args: Iterable[Any] = tuple()
 
     @classmethod
     def _register_handler(cls) -> None:
@@ -249,13 +250,22 @@ class BaseForm(metaclass=FormMeta):
             await cls.finish()
 
     @classmethod
-    async def start(cls, callback: Callable[[], Awaitable]) -> None:
+    async def start(
+            cls,
+            callback: Callable[[], Awaitable],
+            callback_args: Optional[Iterable[Any]] = None
+    ) -> None:
         """
-        Start form processing
-        :return:
+        Start form processing.
+
+        :param callback: Async callback after form processed
+        :param callback_args: Args for callback
         """
         if callback:
             cls._callback = callback
+
+        if callback_args:
+            cls._callback_args = callback_args
 
         cls._register_handler()
         await cls._start_field_promotion(cls._fields[0])
@@ -296,7 +306,10 @@ class BaseForm(metaclass=FormMeta):
         state = Dispatcher.get_current().current_state()
         await state.reset_state(with_data=False)
         if cls._callback:
-            await cls._callback()  # pylint: disable=not-callable
+            if cls._callback_args:
+                await cls._callback(*cls._callback_args)  # pylint: disable=not-callable
+            else:
+                await cls._callback()  # pylint: disable=not-callable
 
     @classmethod
     async def get_data(cls) -> dict:

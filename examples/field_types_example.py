@@ -8,8 +8,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 from aiogram_forms import forms, fields, validators
 
-from examples.base import bot, dp
-
+from examples.base import dp, show_form_data
 
 LANGUAGE_CHOICES = ('English', 'Russian', 'Chinese')
 LANGUAGE_KEYBOARD = ReplyKeyboardMarkup(resize_keyboard=True, row_width=3).add(*[
@@ -43,29 +42,13 @@ class UserProfileForm(forms.Form):
 @dp.message_handler(commands="start")
 async def command_start(message: types.Message):  # pylint: disable=unused-argument
     """Start form processing."""
-    await UserProfileForm.start(callback=_show_info)
+    await UserProfileForm.start(callback=show_form_data, callback_args=(UserProfileForm, ))
 
 
 @dp.message_handler(commands="info")
 async def command_info(message: types.Message):  # pylint: disable=unused-argument
     """Show collected form data."""
-    await _show_info()
-
-
-async def _show_info():
-    """
-    Show collected form data.
-
-    Please note, that data stored by key, not by label.
-    """
-    data = await UserProfileForm.get_data()
-    await bot.send_message(
-        chat_id=types.Chat.get_current().id,
-        text='\n'.join([
-            f'{field.label}: {data[field.data_key]}'
-            for field in UserProfileForm.get_fields()
-        ])
-    )
+    await show_form_data(UserProfileForm)
 
 
 if __name__ == "__main__":
