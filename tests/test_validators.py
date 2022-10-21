@@ -1,6 +1,7 @@
 import pytest
 from parameterized import parameterized
 
+from aiogram_forms.errors import FieldValidationError
 from aiogram_forms.validators import ChoicesValidator
 
 
@@ -8,8 +9,8 @@ from aiogram_forms.validators import ChoicesValidator
     ['Existing value', ['Minsk', 'Moscow', 'London'], 'Moscow'],
 ])
 @pytest.mark.asyncio
-async def test_choices_validator_existing_values_true(_, values, value):
-    assert await ChoicesValidator(values).validate(value) is True
+async def test_choices_validator_existing_values(_, values, value):
+    await ChoicesValidator(values).validate(value)
 
 
 @parameterized.expand([
@@ -18,5 +19,6 @@ async def test_choices_validator_existing_values_true(_, values, value):
     ['Empty value', ['Minsk', 'Moscow', 'London'], ''],
 ])
 @pytest.mark.asyncio
-async def test_choices_validator_invalid_values_false(_, values, value):
-    assert await ChoicesValidator(values).validate(value) is False
+async def test_choices_validator_invalid_values_raises(_, values, value):
+    with pytest.raises(FieldValidationError):
+        await ChoicesValidator(values).validate(value)
