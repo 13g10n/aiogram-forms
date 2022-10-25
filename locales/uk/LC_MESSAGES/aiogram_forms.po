@@ -1,16 +1,16 @@
 # Ukrainian translations for aiogram-forms.
-# Copyright (C) 2022 ORGANIZATION
+# Copyright (C) 2022 Ivan Borisenko
 # This file is distributed under the same license as the aiogram-forms
 # project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+# Ivan Borisenko <i.13g10n@icloud.com>, 2022.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: aiogram-forms VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-10-26 00:24+0300\n"
+"Project-Id-Version: aiogram-forms 0.4.0\n"
+"Report-Msgid-Bugs-To: i.13g10n@icloud.com\n"
+"POT-Creation-Date: 2022-10-26 00:33+0300\n"
 "PO-Revision-Date: 2022-10-26 00:24+0300\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Ivan Borisenko <i.13g10n@icloud.com>\n"
 "Language: uk\n"
 "Language-Team: uk <LL@li.org>\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
