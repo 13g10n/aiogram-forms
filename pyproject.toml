@@ -22,8 +22,8 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.7.2"
-aiogram = "^2.13"
+python = "^3.8"
+aiogram = "^3.0.0b5"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.3"

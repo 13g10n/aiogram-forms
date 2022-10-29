@@ -3,70 +3,60 @@ This example show usage of all available built-in field types.
 
 Before run, make sure you set 'BOT_TOKEN' environment variable.
 """
-from aiogram import executor, types
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+import asyncio
+import os
 
-from aiogram_forms import forms, fields, validators
+from aiogram import Bot, Dispatcher, Router
+from aiogram.filters import Command
+from aiogram.fsm.context import FSMContext
+from aiogram.types import Message
 
-from examples.base import bot, dp
+from aiogram_forms import dispatcher
 
+from aiogram_forms.forms import Form
+from aiogram_forms.forms.fields import TextField, SelectField
 
-LANGUAGE_CHOICES = ('English', 'Russian', 'Chinese')
-LANGUAGE_KEYBOARD = ReplyKeyboardMarkup(resize_keyboard=True, row_width=3).add(*[
-    KeyboardButton(label) for label in LANGUAGE_CHOICES
-])
-
-
-class UserProfileForm(forms.Form):
-    """Example of user details form."""
-
-    # Simple field usage
-    name = fields.StringField('Name')
-    # Using custom validators
-    username = fields.StringField(
-        'Username', validators=[validators.RegexValidator(r'^[a-z0-9_-]{3,15}$')]
-    )
-    # Custom reply keyboard with validation
-    language = fields.ChoicesField(
-        'Language', LANGUAGE_CHOICES, reply_keyboard=LANGUAGE_KEYBOARD
-    )
-    # Custom validation message
-    email = fields.EmailField(
-        'Email', validation_error_message='Wrong email format!'
-    )
-    # Allow user to share contact as reply
-    phone = fields.PhoneNumberField(
-        'Phone', share_contact=True, share_contact_label='Share your contact'
-    )
+from aiogram_forms.menus import Menu, MenuItem
 
 
-@dp.message_handler(commands="start")
-async def command_start(message: types.Message):  # pylint: disable=unused-argument
-    """Start form processing."""
-    await UserProfileForm.start(callback=_show_info)
+router = Router()
 
 
-@dp.message_handler(commands="info")
-async def command_info(message: types.Message):  # pylint: disable=unused-argument
-    """Show collected form data."""
-    await _show_info()
+@dispatcher.register('test-form')
+class TestForm(Form):
+    name = TextField('Name')
+    lang = SelectField('Language', choices=['English', 'Russian'])
 
 
-async def _show_info():
-    """
-    Show collected form data.
+@dispatcher.register('test-menu')
+class TestMenu(Menu):
+    form = MenuItem('Start form', action='test-form')
+    settings = MenuItem('Settings')
+    about = MenuItem('About')
 
-    Please note, that data stored by key, not by label.
-    """
-    data = await UserProfileForm.get_data()
-    await bot.send_message(
-        chat_id=types.Chat.get_current().id,
-        text='\n'.join([
-            f'{field.label}: {data[field.data_key]}'
-            for field in UserProfileForm.get_fields()
-        ])
-    )
+
+@router.message(Command(commands=['start']))
+async def command_start(message: Message, state: FSMContext) -> None:
+    await dispatcher.show('test-form', message, state)
+
+
+@router.message(Command(commands=['menu']))
+async def command_menu(message: Message, state: FSMContext) -> None:
+    await dispatcher.show('test-menu', message, state)
+
+
+async def main():
+    bot = Bot(token=os.getenv('BOT_TOKEN'))
+    dp = Dispatcher()
+    dp.include_router(router)
+
+    dispatcher.attach(dp)
+
+    await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
-    executor.start_polling(dp, skip_updates=True)
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass
