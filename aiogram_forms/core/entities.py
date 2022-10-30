@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional, Type, Mapping
 
 from aiogram.filters import Filter
 
-from .enums import RouterHandlerType
+from ..enums import RouterHandlerType
 
 if TYPE_CHECKING:
     from .states import EntityContainerStatesGroup, EntityState

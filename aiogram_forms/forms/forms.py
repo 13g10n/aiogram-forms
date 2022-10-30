@@ -6,12 +6,12 @@ from aiogram.filters import Filter
 from aiogram.fsm.context import FSMContext
 
 from .errors import FieldValidationError
-from ..base import Entity, EntityContainer
+from ..core.entities import Entity, EntityContainer
 from ..enums import RouterHandlerType
 from ..filters import EntityStatesFilter
 
 if TYPE_CHECKING:
-    from ..states import EntityState
+    from aiogram_forms.core.states import EntityState
 
 
 class Validator(abc.ABC):
@@ -64,7 +64,11 @@ class Form(EntityContainer):
 
         field: Field = cast(Field, current_state.entity)
         try:
-            await field.validate(message.text)
+            # TODO: move data extraction to field (for custom processing)?
+            if message.content_type == 'contact':
+                await field.validate(message.contact.phone_number)
+            else:
+                await field.validate(message.text)
         except FieldValidationError as error:
             await message.answer(error.message, reply_markup=field.reply_keyboard)
             return

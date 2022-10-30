@@ -5,7 +5,7 @@ from aiogram.filters import Filter
 from aiogram.fsm.context import FSMContext
 
 if TYPE_CHECKING:
-    from .states import EntityContainerStatesGroup
+    from aiogram_forms.core.states import EntityContainerStatesGroup
 
 
 class EntityStatesFilter(Filter):

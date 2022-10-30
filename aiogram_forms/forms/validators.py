@@ -2,9 +2,9 @@
 User input validators.
 """
 import re
-from typing import Optional, Iterable, Set, Union
+from typing import Optional, Iterable, Set
 
-from .base import Validator
+from .forms import Validator
 from .errors import FieldValidationError
 
 

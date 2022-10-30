@@ -3,9 +3,9 @@ from typing import Optional, Mapping
 from aiogram.filters import Filter
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from .base import Entity, EntityContainer
-from .enums import RouterHandlerType
-from .filters import EntityCallbackFilter
+from ..core.entities import Entity, EntityContainer
+from ..enums import RouterHandlerType
+from ..filters import EntityCallbackFilter
 
 
 class MenuItem(Entity):

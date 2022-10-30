@@ -2,9 +2,9 @@ from typing import Type, cast, Tuple
 
 from aiogram.fsm.state import StatesGroup, State
 
-from .base import EntityContainer, Entity
+from .entities import EntityContainer, Entity
 from .const import STATES_GROUP_CLASS_SUFFIX
-from .utils import prev_next_iter, get_attrs_of_type
+from ..utils import prev_next_iter, get_attrs_of_type
 
 
 class EntityState(State):

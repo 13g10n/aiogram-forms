@@ -1,10 +1,10 @@
 from typing import Type, MutableMapping
 
-from aiogram import Dispatcher, Router, types
-from aiogram.fsm.context import FSMContext
+from aiogram import Dispatcher, Router
 
-from .base import EntityContainer
-from .states import EntityContainerStatesGroup
+from .core.entities import EntityContainer
+from .core.states import EntityContainerStatesGroup
+from .middleware import EntityMiddleware
 
 
 class EntityDispatcher:
@@ -18,6 +18,10 @@ class EntityDispatcher:
 
     def attach(self, dp: Dispatcher):
         self._dp = dp
+
+        # TODO: add other types of events
+        self._dp.message.middleware(EntityMiddleware(self))
+
         dp.include_router(self._router)
 
     def register(self, name: str):
@@ -30,12 +34,6 @@ class EntityDispatcher:
             self._registry[name] = container
             return container
         return wrapper
-
-    async def show(self, name: str, message: types.Message, state: FSMContext):
-        entity = self._registry[name]
-
-        # TODO: find a way to skip `message` and `state` passing
-        await entity.show(message, state)
 
 
 dispatcher = EntityDispatcher()
