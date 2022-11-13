@@ -3,12 +3,14 @@ Forms and fields custom errors.
 """
 
 
-class FieldValidationError(ValueError):
+class ValidationError(ValueError):
     """
     Field validation error.
     """
     message: str
+    code: str
 
-    def __init__(self, message: str) -> None:
+    def __init__(self, message: str, code: str) -> None:
         super().__init__()
         self.message = message
+        self.code = code

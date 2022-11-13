@@ -14,10 +14,7 @@ from aiogram.types import Message
 # TODO: make it pretty
 from aiogram_forms.dispatcher import dispatcher
 
-from aiogram_forms.forms import forms, fields, validators
-
-from aiogram_forms.menus import menus
-from aiogram_forms.middleware import FormsManager
+from aiogram_forms.forms import forms, fields, validators, manager
 
 router = Router()
 
@@ -37,23 +34,14 @@ class TestForm(forms.Form):
     # email = fields.EmailField('Email')
     # phone = fields.PhoneNumberField('Phone')
 
-
-@dispatcher.register('test-menu')
-class TestMenu(menus.Menu):
-    form = menus.MenuItem('Start form', action='test-form')
-    settings = menus.MenuItem('Settings')
-    about = menus.MenuItem('About')
+    @classmethod
+    async def callback(cls, message: Message, state: FSMContext, *args, **kwargs) -> None:
+        await message.answer('This is custom callback!')
 
 
 @router.message(Command(commands=['start']))
-async def command_start(message: Message, state: FSMContext, forms: 'FormsManager') -> None:
-    # TODO: callback, callback_args
-    await forms.show('test-form')
-
-
-@router.message(Command(commands=['menu']))
-async def command_menu(message: Message, state: FSMContext, forms: 'FormsManager') -> None:
-    await forms.show('test-menu')
+async def command_start(message: Message, forms_manager: 'manager.FormsManager') -> None:
+    await forms_manager.show('test-form')
 
 
 async def main():

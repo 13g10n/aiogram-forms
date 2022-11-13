@@ -49,4 +49,6 @@ class EntityContainerStatesGroup(StatesGroup):
             value.state = getattr(state_class, key)
 
         container.state = state_class
+        state_class.container = container
+
         return state_class

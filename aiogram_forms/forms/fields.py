@@ -2,13 +2,58 @@ from typing import List, Optional
 
 from aiogram import types
 
-from .forms import Field, Validator
-from .validators import ChoicesValidator, RegexValidator
+from .base import Field, Validator
+from .validators import MaxLengthValidator, MinValueValidator
 from .const import PHONE_NUMBER_REGEXP, EMAIL_REGEXP
 
 
+# TODO: new fields
 class TextField(Field):
+
+    def __init__(
+            self,
+            label: str,
+            max_length: Optional[int] = None,
+            min_length: Optional[int] = None,
+            *args,
+            **kwargs
+    ) -> None:
+        super().__init__(label, *args, **kwargs)
+        if max_length:
+            self.validators.append(MaxLengthValidator(max_length))
+        if min_length:
+            self.validators.append(MinValueValidator(min_length))
+
+
+class BooleanField(Field):
+    # returns True/False, allow 2 (3 if with None) options
     pass
+
+
+class ChoiceField(Field):
+    # choices
+    pass
+
+
+class NumberField(Field):
+    # max_value, min_value, decimal_places, max_digits, step_size
+    pass
+
+
+class EmailField(TextField):
+    pass
+
+
+class RegexField(TextField):
+    # regex
+    pass
+
+
+class URLField(TextField):
+    pass
+
+
+# TODO: end new fields
 
 
 class SelectField(Field):

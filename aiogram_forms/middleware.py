@@ -20,5 +20,5 @@ class EntityMiddleware(BaseMiddleware):
         event: types.Message,
         data: Dict[str, Any]
     ) -> Any:
-        data['forms'] = FormsManager(self.dispatcher, event, data)
+        data['forms_manager'] = FormsManager(self.dispatcher, event, data)
         return await handler(event, data)
