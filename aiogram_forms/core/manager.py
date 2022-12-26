@@ -1,18 +1,21 @@
 import abc
-from typing import Dict, Any
+from typing import TYPE_CHECKING, Dict, Any
 
 from aiogram import types
+
+if TYPE_CHECKING:
+    from .. import EntityDispatcher
 
 
 class EntityManager(abc.ABC):
 
     def __init__(
             self,
-            dispatcher,
+            dispatcher: 'EntityDispatcher',
             event: types.Message,
             data: Dict[str, Any]
     ) -> None:
-        self.dispatcher = dispatcher
+        self._dispatcher = dispatcher
         self.event = event
         self.data = data
 

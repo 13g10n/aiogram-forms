@@ -29,6 +29,7 @@ class EntityContainerStatesGroup(StatesGroup):
     def bind(cls, container: Type['EntityContainer']) -> Type['EntityContainerStatesGroup']:
         form_fields = get_attrs_of_type(container, Entity)
 
+        # TODO: move to states (with .next() and .prev())
         for previous, item, nxt in prev_next_iter([x[1] for x in form_fields]):
             item.prev = previous
             item.next = nxt

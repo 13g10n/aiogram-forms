@@ -2,10 +2,11 @@ from typing import TYPE_CHECKING, Callable, Dict, Any, Awaitable
 
 from aiogram import BaseMiddleware, types
 
+from .const import FORMS_MANAGER_DI_KEY
 from .forms.manager import FormsManager
 
 if TYPE_CHECKING:
-    from .dispatcher import EntityDispatcher
+    from aiogram_forms.dispatcher import EntityDispatcher
 
 
 class EntityMiddleware(BaseMiddleware):
@@ -20,5 +21,5 @@ class EntityMiddleware(BaseMiddleware):
         event: types.Message,
         data: Dict[str, Any]
     ) -> Any:
-        data['forms_manager'] = FormsManager(self.dispatcher, event, data)
+        data[FORMS_MANAGER_DI_KEY] = FormsManager(self.dispatcher, event, data)
         return await handler(event, data)

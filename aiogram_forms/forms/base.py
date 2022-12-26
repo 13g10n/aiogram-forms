@@ -1,11 +1,10 @@
-from typing import TYPE_CHECKING, Mapping, cast, List, Optional
+from typing import TYPE_CHECKING, Mapping, cast, Optional
 
 from aiogram import types
 from aiogram.filters import Filter
 from aiogram.fsm.context import FSMContext
 
 from .errors import ValidationError
-from .validators import Validator
 from ..core.entities import Entity, EntityContainer
 from ..enums import RouterHandlerType
 from ..filters import EntityStatesFilter
@@ -17,14 +16,14 @@ if TYPE_CHECKING:
 class Field(Entity):
     help_text: Optional[str] = None
     error_messages: Optional[Mapping[str, str]] = None
-    validators: List[Validator]
+    validators: list
 
     def __init__(
             self,
             label: str,
             help_text: Optional[str] = None,
             error_messages: Optional[Mapping[str, str]] = None,
-            validators: Optional[List[Validator]] = None
+            validators: Optional[list] = None
     ) -> None:
         self.label = label
         self.help_text = help_text
@@ -50,6 +49,7 @@ class Form(EntityContainer):
 
     @classmethod
     async def handler(cls, message: types.Message, state: FSMContext, *args, **kwargs) -> None:
+        # TODO: move to dispatcher / managers
         state_label = await state.get_state()
         current_state: 'EntityState' = next(iter([
             st for st in cls.state.get_states() if st.state == state_label
@@ -74,14 +74,5 @@ class Form(EntityContainer):
             await message.answer(next_entity.label, reply_markup=next_entity.reply_keyboard)
         else:
             await state.set_state(None)
-            await cls.callback(message, state, *args, **kwargs)
-
-    @classmethod
-    async def show(cls, event, state, *args, **kwargs) -> None:
-        first_entity = cast(Field, cls.state.get_states()[0].entity)
-        await state.set_state(first_entity.state)
-        await event.answer(first_entity.label, reply_markup=first_entity.reply_keyboard)
-
-    @classmethod
-    async def callback(cls, message: types.Message, state: FSMContext, *args, **kwargs) -> None:
-        pass
+            # TODO: add callbacks
+            # await cls.callback(message, state, *args, **kwargs)

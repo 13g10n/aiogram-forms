@@ -30,8 +30,3 @@ class EntityContainer(abc.ABC):
     @abc.abstractmethod
     async def handler(cls, *args, **kwargs) -> None:
         """Event handler."""
-
-    @classmethod
-    @abc.abstractmethod
-    async def show(cls, *args, **kwargs) -> None:
-        """Start."""
