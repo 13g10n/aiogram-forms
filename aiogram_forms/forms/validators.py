@@ -1,9 +1,14 @@
+# pylint: disable=too-few-public-methods
+"""
+Form fields validators.
+"""
 import re
 
 from aiogram_forms.errors import ValidationError
 
 
 class MinLengthValidator:
+    """Min length validator."""
 
     def __init__(self, limit: int) -> None:
         self.limit = limit
@@ -14,6 +19,7 @@ class MinLengthValidator:
 
 
 class MaxLengthValidator:
+    """Max length validator."""
 
     def __init__(self, limit: int) -> None:
         self.limit = limit
@@ -24,7 +30,8 @@ class MaxLengthValidator:
 
 
 class RegexValidator:
-    error: ValidationError = ValidationError(f'Value if in invalid format.', code='regex')
+    """Regex validator."""
+    error: ValidationError = ValidationError('Value if in invalid format.', code='regex')
 
     def __init__(self, regex: str) -> None:
         self.regex = re.compile(regex)
@@ -40,7 +47,7 @@ class EmailValidator(RegexValidator):
 
     Exactly one "@" sign and at least one "." in the part after the @.
     """
-    error = ValidationError(f'Value should be valid email address.', code='email')
+    error = ValidationError('Value should be valid email address.', code='email')
 
     def __init__(self, regex: str = r'[^@]+@[^@]+\.[^@]+') -> None:
         super().__init__(regex)
@@ -51,7 +58,7 @@ class PhoneNumberValidator(RegexValidator):
 
     Reference: https://ihateregex.io/expr/phone/
     """
-    error = ValidationError(f'Value should be a valid phone number.', code='phone')
+    error = ValidationError('Value should be a valid phone number.', code='phone')
 
     def __init__(self, regex: str = r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$'):
         super().__init__(regex)

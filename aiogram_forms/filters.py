@@ -1,3 +1,6 @@
+"""
+Aiogram events filters.
+"""
 from typing import TYPE_CHECKING, Type
 
 from aiogram import types
@@ -9,6 +12,7 @@ if TYPE_CHECKING:
 
 
 class EntityStatesFilter(Filter):
+    """Filter by entity states."""
     def __init__(self, state: Type['EntityContainerStatesGroup']) -> None:
         self._state = state
 
@@ -18,6 +22,7 @@ class EntityStatesFilter(Filter):
 
 
 class EntityCallbackFilter(Filter):
+    """Filter by callback data."""
     def __init__(self, state: Type['EntityContainerStatesGroup']) -> None:
         self._state = state
 

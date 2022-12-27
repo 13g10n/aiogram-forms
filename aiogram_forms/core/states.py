@@ -1,3 +1,6 @@
+"""
+Core entity states.
+"""
 from typing import Type, cast, Tuple
 
 from aiogram.fsm.state import StatesGroup, State
@@ -8,6 +11,7 @@ from .. import utils
 
 
 class EntityState(State):
+    """Entity state."""
     entity: 'Entity'
 
     def __init__(self, entity: Entity) -> None:
@@ -16,17 +20,20 @@ class EntityState(State):
 
 
 class EntityContainerStatesGroup(StatesGroup):
+    """Entity container states group."""
     container: Type['EntityContainer']
 
     @classmethod
     def get_states(cls) -> Tuple[EntityState]:
+        """Get all entity container states."""
         return cast(
             Tuple[EntityState],
-            cls.__states__
+            cls.__states__  # pylint: disable=no-member
         )
 
     @classmethod
     def bind(cls, container: Type['EntityContainer']) -> Type['EntityContainerStatesGroup']:
+        """Create and bind entity container states group."""
         form_fields = utils.get_attrs_of_type(container, Entity)
 
         state_class = cast(

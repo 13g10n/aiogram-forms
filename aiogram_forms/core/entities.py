@@ -1,3 +1,6 @@
+"""
+Core entity types.
+"""
 import abc
 from typing import TYPE_CHECKING, Type, Mapping
 
@@ -9,13 +12,13 @@ if TYPE_CHECKING:
     from ..types import TranslatableString
 
 
-class Entity:
+class Entity:  # pylint: disable=too-few-public-methods
     """Base class for containing item."""
     state: 'EntityState'
     label: 'TranslatableString'
 
 
-class EntityContainer(abc.ABC):
+class EntityContainer(abc.ABC):  # pylint: disable=too-few-public-methods
     """Base class for Entity container implementation."""
     state: Type['EntityContainerStatesGroup'] = None
 

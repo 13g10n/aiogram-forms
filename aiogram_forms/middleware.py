@@ -1,3 +1,6 @@
+"""
+Dependency injector.
+"""
 from typing import TYPE_CHECKING, Callable, Dict, Any, Awaitable
 
 from aiogram import BaseMiddleware, types
@@ -9,7 +12,8 @@ if TYPE_CHECKING:
     from aiogram_forms.dispatcher import EntityDispatcher
 
 
-class EntityMiddleware(BaseMiddleware):
+class EntityMiddleware(BaseMiddleware):  # pylint: disable=too-few-public-methods
+    """Entity middleware."""
     dispatcher: 'EntityDispatcher'
 
     def __init__(self, dispatcher: 'EntityDispatcher') -> None:

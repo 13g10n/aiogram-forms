@@ -1,7 +1,12 @@
+# pylint: disable=invalid-name
+"""
+Enums.
+"""
 import enum
 
 
 class RouterHandlerType(enum.Enum):
+    """Aiogram router handler types."""
     Update = 'update'
     Message = 'message'
     EditedMessage = 'edited_message'

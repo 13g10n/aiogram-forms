@@ -1,9 +1,11 @@
+"""
+Forms manager.
+"""
 from typing import Type, cast, Optional, Dict, Any
 
 from aiogram.fsm.context import FSMContext
 
-from . import Form
-from .base import Field
+from .base import Field, Form
 from ..errors import ValidationError
 from ..core.entities import EntityContainer
 from ..core.manager import EntityManager
@@ -11,6 +13,7 @@ from ..core.states import EntityState
 
 
 class FormsManager(EntityManager):
+    """Forms manager."""
     state: FSMContext
 
     def __init__(self, *args, **kwargs):
@@ -28,6 +31,7 @@ class FormsManager(EntityManager):
         await self.event.answer(first_entity.label, reply_markup=first_entity.reply_keyboard)
 
     async def handle(self, form: Type['Form']) -> None:
+        """Handle form field."""
         state_label = await self.state.get_state()
         current_state: 'EntityState' = next(iter([
             st for st in form.state.get_states() if st.state == state_label
@@ -45,7 +49,7 @@ class FormsManager(EntityManager):
             return
 
         data = await self.state.get_data()
-        form_data = data.get(form.__name__, dict())
+        form_data = data.get(form.__name__, {})
         form_data.update({field.state.state.split(':')[-1]: value})
         await self.state.update_data({form.__name__: form_data})
 
@@ -63,5 +67,6 @@ class FormsManager(EntityManager):
             await form.callback(self.event, **self.data)
 
     async def get_data(self, form: Type['Form']) -> Dict[str, Any]:
+        """Get form data from store."""
         data = await self.state.get_data()
         return data.get(form.__name__)

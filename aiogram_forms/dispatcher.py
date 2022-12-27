@@ -1,3 +1,6 @@
+"""
+Entity dispatcher.
+"""
 from typing import Type, MutableMapping, Dict, Any
 
 from aiogram import Dispatcher, Router, types
@@ -9,6 +12,7 @@ from .middleware import EntityMiddleware
 
 
 class EntityDispatcher:
+    """Entity dispatcher."""
     _registry: MutableMapping[
         str,
         MutableMapping[str, Type['EntityContainer']]
@@ -20,13 +24,15 @@ class EntityDispatcher:
     def __init__(self):
         self._router = Router()
 
-    def attach(self, dp: Dispatcher):
+    def attach(self, dp: Dispatcher):  # pylint: disable=invalid-name
+        """Attach aiogram dispatcher."""
         self._dp = dp
         self._dp.message.middleware(EntityMiddleware(self))
 
         dp.include_router(self._router)
 
     def register(self, name: str):
+        """Register entity with given name."""
         def wrapper(container: Type[EntityContainer]):
             EntityContainerStatesGroup.bind(container)
 
@@ -41,6 +47,7 @@ class EntityDispatcher:
         return wrapper
 
     def get_entity_container(self, container_type: Type[EntityContainer], name: str):
+        """Het entity container by name and type."""
         entity_container = self._registry['forms'].get(name)
         if entity_container:
             return entity_container

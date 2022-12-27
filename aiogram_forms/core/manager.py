@@ -1,3 +1,6 @@
+"""
+Code entity manager.
+"""
 import abc
 from typing import TYPE_CHECKING, Dict, Any
 
@@ -7,7 +10,8 @@ if TYPE_CHECKING:
     from .. import EntityDispatcher
 
 
-class EntityManager(abc.ABC):
+class EntityManager(abc.ABC):  # pylint: disable=too-few-public-methods
+    """Entity manager."""
 
     def __init__(
             self,
@@ -20,4 +24,5 @@ class EntityManager(abc.ABC):
         self.data = data
 
     @abc.abstractmethod
-    async def show(self, name: str): pass
+    async def show(self, name: str):
+        """Start entity propagation."""

@@ -1,3 +1,6 @@
+"""
+Forms base implementation.
+"""
 import inspect
 from typing import TYPE_CHECKING, Mapping, Optional, Any, List, Callable, Awaitable, Union
 
@@ -27,11 +30,12 @@ class Field(Entity):
     ) -> None:
         self.label = label
         self.help_text = help_text
-        self.error_messages = error_messages or dict()
-        self.validators = validators or list()
+        self.error_messages = error_messages or {}
+        self.validators = validators or []
 
     @property
     def reply_keyboard(self):
+        """Field keyboard."""
         return types.ReplyKeyboardRemove()
 
     async def extract(self, message: types.Message) -> Any:
@@ -58,10 +62,11 @@ class Form(EntityContainer):
 
     @classmethod
     def filters(cls, *args, **kwargs) -> Mapping[RouterHandlerType, Filter]:
+        """Form handler filters."""
         return {
             RouterHandlerType.Message: EntityStatesFilter(cls.state)
         }
 
     @classmethod
     async def callback(cls, message: types.Message, **data) -> None:
-        pass
+        """Form completion callback."""
