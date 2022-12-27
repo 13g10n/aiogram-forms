@@ -22,8 +22,6 @@ class EntityDispatcher:
 
     def attach(self, dp: Dispatcher):
         self._dp = dp
-
-        # TODO: add other types of events
         self._dp.message.middleware(EntityMiddleware(self))
 
         dp.include_router(self._router)
@@ -36,7 +34,6 @@ class EntityDispatcher:
                 getattr(self._router, str(filter_type.value))(filter_)(self._get_entity_container_handler(container))
 
             if container.__name__ not in self._registry:
-                # TODO: extend with menus
                 self._registry['forms'] = {}
 
             self._registry['forms'][name] = container

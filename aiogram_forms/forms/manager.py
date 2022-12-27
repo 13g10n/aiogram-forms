@@ -1,10 +1,10 @@
-from typing import Type, cast, Optional
+from typing import Type, cast, Optional, Dict, Any
 
 from aiogram.fsm.context import FSMContext
 
 from . import Form
 from .base import Field
-from .errors import ValidationError
+from ..errors import ValidationError
 from ..core.entities import EntityContainer
 from ..core.manager import EntityManager
 from ..core.states import EntityState
@@ -40,18 +40,28 @@ class FormsManager(EntityManager):
             )
             await field.validate(value)
         except ValidationError as error:
-            await self.event.answer(error.message, reply_markup=field.reply_keyboard)
+            error_message = field.error_messages.get(error.code) or error.message
+            await self.event.answer(error_message, reply_markup=field.reply_keyboard)
             return
 
-        # TODO: save to state
+        data = await self.state.get_data()
+        form_data = data.get(form.__name__, dict())
+        form_data.update({field.state.state.split(':')[-1]: value})
+        await self.state.update_data({form.__name__: form_data})
 
         next_state_index = dict(zip(current_state.group, list(current_state.group)[1:]))
         next_entity_state: Optional['EntityState'] = next_state_index.get(current_state)
         if next_entity_state:
             next_field: Field = cast(Field, next_entity_state.entity)
             await self.state.set_state(next_field.state)
-            await self.event.answer(next_field.label, reply_markup=next_field.reply_keyboard)
+            await self.event.answer(
+                f'{next_field.label}\n{next_field.help_text or ""}',
+                reply_markup=next_field.reply_keyboard
+            )
         else:
             await self.state.set_state(None)
-            # TODO: add callbacks
-            # await cls.callback(message, state, *args, **kwargs)
+            await form.callback(self.event, **self.data)
+
+    async def get_data(self, form: Type['Form']) -> Dict[str, Any]:
+        data = await self.state.get_data()
+        return data.get(form.__name__)

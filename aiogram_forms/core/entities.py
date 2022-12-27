@@ -6,12 +6,13 @@ if TYPE_CHECKING:
 
     from .states import EntityContainerStatesGroup, EntityState
     from ..enums import RouterHandlerType
+    from ..types import TranslatableString
 
 
 class Entity:
     """Base class for containing item."""
     state: 'EntityState'
-    label: str
+    label: 'TranslatableString'
 
 
 class EntityContainer(abc.ABC):
