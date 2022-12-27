@@ -16,10 +16,9 @@ def middleware(dispatcher):
 
 
 @pytest.mark.asyncio
-async def test_middleware_call(middleware):
-    event = Mock()
+async def test_middleware_call(message, middleware):
     data = {
         'state': Mock()
     }
     handler = AsyncMock(return_value=42)
-    assert await middleware(handler, event, data) == 42
+    assert await middleware(handler, message, data) == 42

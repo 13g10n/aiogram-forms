@@ -4,7 +4,7 @@ from aiogram.fsm.state import StatesGroup, State
 
 from .entities import EntityContainer, Entity
 from ..const import STATES_GROUP_CLASS_SUFFIX
-from ..utils import get_attrs_of_type
+from .. import utils
 
 
 class EntityState(State):
@@ -27,7 +27,7 @@ class EntityContainerStatesGroup(StatesGroup):
 
     @classmethod
     def bind(cls, container: Type['EntityContainer']) -> Type['EntityContainerStatesGroup']:
-        form_fields = get_attrs_of_type(container, Entity)
+        form_fields = utils.get_attrs_of_type(container, Entity)
 
         state_class = cast(
             Type[EntityContainerStatesGroup],

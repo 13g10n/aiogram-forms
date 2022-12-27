@@ -1,5 +1,5 @@
 import inspect
-from typing import TYPE_CHECKING, Mapping, Optional, Any, List, Callable
+from typing import TYPE_CHECKING, Mapping, Optional, Any, List, Callable, Awaitable, Union
 
 from aiogram import types
 from aiogram.filters import Filter
@@ -16,14 +16,14 @@ class Field(Entity):
     """Simple form field implementation."""
     help_text: Optional['TranslatableString']
     error_messages: Mapping[str, 'TranslatableString']
-    validators: List[Callable]
+    validators: List[Union[Callable, Awaitable]]
 
     def __init__(
             self,
             label: 'TranslatableString',
             help_text: Optional['TranslatableString'] = None,
             error_messages: Optional[Mapping[str, 'TranslatableString']] = None,
-            validators: Optional[List[Callable[[Any], None]]] = None
+            validators: Optional[List[Union[Callable, Awaitable]]] = None
     ) -> None:
         self.label = label
         self.help_text = help_text
@@ -46,6 +46,8 @@ class Field(Entity):
         """Run validators against processed field value."""
         for validator in self.validators:
             if inspect.iscoroutinefunction(validator):
+                await validator(value)
+            elif hasattr(validator, '__call__') and inspect.iscoroutinefunction(validator.__call__):
                 await validator(value)
             else:
                 validator(value)
