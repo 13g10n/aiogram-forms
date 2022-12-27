@@ -18,9 +18,9 @@ router = Router()
 
 @dispatcher.register('test-form')
 class TestForm(Form):
-    name = fields.Field('Name')
-    text = fields.Field('Text')
-    value = fields.Field('Value')
+    name = fields.TextField('Name')
+    text = fields.TextField('Email')
+    value = fields.TextField('Value')
 
 
 @router.message(Command(commands=['start']))

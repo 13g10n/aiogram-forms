@@ -1,4 +1,4 @@
-from typing import Mapping, Optional, Any
+from typing import Mapping, Optional, Any, List, Callable
 
 from aiogram import types
 from aiogram.filters import Filter
@@ -10,9 +10,9 @@ from ..filters import EntityStatesFilter
 
 class Field(Entity):
     """Simple form field implementation."""
-    help_text: Optional[str] = None
-    error_messages: Optional[Mapping[str, str]] = None
-    validators: list
+    help_text: Optional[str]
+    error_messages: Optional[Mapping[str, str]]
+    validators: List[Callable]
 
     def __init__(
             self,
@@ -44,7 +44,7 @@ class Field(Entity):
     async def validate(self, value: Any) -> None:
         """Run validators against processed field value."""
         for validator in self.validators:
-            await validator.validate(value)
+            await validator(value)
 
 
 class Form(EntityContainer):

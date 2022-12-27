@@ -6,5 +6,5 @@ def get_attrs_of_type(obj: Any, type_: Type) -> Tuple:
         (key, value)
         for key, value
         in vars(obj).items()
-        if isinstance(value, type_)
+        if isinstance(value, type_) and not key.startswith('__')
     )
