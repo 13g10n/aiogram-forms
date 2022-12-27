@@ -1,2 +1,7 @@
+"""
+Package constants.
+"""
 
-FORMS_MANAGER_DI_KEY = 'forms_manager'
+STATES_GROUP_CLASS_SUFFIX = 'StatesGroup'
+
+FORMS_MANAGER_DI_KEY = 'forms'

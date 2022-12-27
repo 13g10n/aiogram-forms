@@ -3,8 +3,8 @@ from typing import Type, cast, Tuple
 from aiogram.fsm.state import StatesGroup, State
 
 from .entities import EntityContainer, Entity
-from .const import STATES_GROUP_CLASS_SUFFIX
-from ..utils import prev_next_iter, get_attrs_of_type
+from ..const import STATES_GROUP_CLASS_SUFFIX
+from ..utils import get_attrs_of_type
 
 
 class EntityState(State):
@@ -28,11 +28,6 @@ class EntityContainerStatesGroup(StatesGroup):
     @classmethod
     def bind(cls, container: Type['EntityContainer']) -> Type['EntityContainerStatesGroup']:
         form_fields = get_attrs_of_type(container, Entity)
-
-        # TODO: move to states (with .next() and .prev())
-        for previous, item, nxt in prev_next_iter([x[1] for x in form_fields]):
-            item.prev = previous
-            item.next = nxt
 
         state_class = cast(
             Type[EntityContainerStatesGroup],

@@ -1,32 +1,24 @@
 import abc
-from typing import TYPE_CHECKING, Optional, Type, Mapping
-
-from aiogram.filters import Filter
-
-from ..enums import RouterHandlerType
+from typing import TYPE_CHECKING, Type, Mapping
 
 if TYPE_CHECKING:
+    from aiogram.filters import Filter
+
     from .states import EntityContainerStatesGroup, EntityState
+    from ..enums import RouterHandlerType
 
 
 class Entity:
+    """Base class for containing item."""
     state: 'EntityState'
     label: str
 
-    # TODO: move to forms only
-    prev: Optional['Entity']
-    next: Optional['Entity']
-
 
 class EntityContainer(abc.ABC):
+    """Base class for Entity container implementation."""
     state: Type['EntityContainerStatesGroup'] = None
 
     @classmethod
     @abc.abstractmethod
-    def filters(cls, *args, **kwargs) -> Mapping[RouterHandlerType, Filter]:
+    def filters(cls, *args, **kwargs) -> Mapping['RouterHandlerType', 'Filter']:
         """Event filters."""
-
-    @classmethod
-    @abc.abstractmethod
-    async def handler(cls, *args, **kwargs) -> None:
-        """Event handler."""
