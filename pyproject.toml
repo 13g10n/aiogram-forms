@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aiogram-forms"
-version = "0.3.0"
+version = "1.0.0a0"
 description = "Forms for aiogram"
 authors = ["Ivan Borisenko <i.13g10n@icloud.com>"]
 license = "MIT"

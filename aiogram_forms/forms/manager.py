@@ -59,7 +59,10 @@ class FormsManager(EntityManager):
             next_field: Field = cast(Field, next_entity_state.entity)
             await self.state.set_state(next_field.state)
             await self.event.answer(
-                f'{next_field.label}\n{next_field.help_text or ""}',
+                '\n'.join([
+                    next_field.label,
+                    next_field.help_text or ""
+                ] if next_field.help_text else [next_field.label]),
                 reply_markup=next_field.reply_keyboard
             )
         else:
