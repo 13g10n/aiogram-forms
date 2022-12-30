@@ -1,5 +1,6 @@
 # aiogram-forms
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aiogram-forms)
+![Project code coverage](https://img.shields.io/badge/coverage-96%25-green)
+![Project status](https://img.shields.io/pypi/status/aiogram-forms)
 ![PyPI](https://img.shields.io/pypi/v/aiogram-forms)
 ![GitHub](https://img.shields.io/github/license/13g10n/aiogram-forms)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/aiogram-forms?label=installs)
@@ -13,31 +14,44 @@ pip install aiogram-forms
 ```
 
 ## Usage
-Create form you need by subclassing `aiogram_forms.forms.Form`. Fields can be added with `aiogram_forms.fields.Field`. For more examples refer to `examples` folder.
+Create form you need by subclassing `aiogram_forms.forms.Form`. Fields can be added from `aiogram_forms.forms.fields` subpackage.
 ```python
-class UserProfileForm(forms.Form):
-    """Example of user details form."""
+from aiogram_forms import dispatcher
+from aiogram_forms.forms import Form, fields, FormsManager
+from aiogram_forms.errors import ValidationError
 
-    # Simple field usage
-    name = fields.StringField('Name')
-    # Using custom validators
-    username = fields.StringField(
-        'Username', validators=[validators.RegexValidator(r'^[a-z0-9_-]{3,15}$')]
+def validate_username_format(value: str):
+    """Validate username starts with leading @."""
+    if not value.startswith('@'):
+        raise ValidationError('Username should starts with "@".', code='username_prefix')
+
+@dispatcher.register('test-form')
+class TestForm(Form):
+    username = fields.TextField(
+        'Username', min_length=4, validators=[validate_username_format],
+        error_messages={'min_length': 'Username must contain at least 4 characters!'}
     )
-    # Custom reply keyboard with validation
-    language = fields.ChoicesField(
-        'Language', LANGUAGE_CHOICES, reply_keyboard=LANGUAGE_KEYBOARD
-    )
-    # Custom validation message
-    email = fields.EmailField(
-        'Email', validation_error_message='Wrong email format!'
-    )
-    # Allow user to share contact as reply
-    phone = fields.PhoneNumberField(
-        'Phone', share_contact=True, share_contact_label='Share your contact'
-    )
+    email = fields.EmailField('Email', help_text='We will send confirmation code.')
+    phone = fields.PhoneNumberField('Phone number', share_contact=True)
+    value = fields.TextField('Value')
+
+    @classmethod
+    async def callback(cls, message: types.Message, forms: FormsManager, **data) -> None:
+        data = await forms.get_data(TestForm)  # Get form data from state
+        await message.answer(text='Thank you!')
+
+@router.message(Command(commands=['start']))
+async def command_start(message: Message, forms: FormsManager) -> None:
+    await forms.show('test-form')  # Start form processing
+
+async def main():
+    bot = Bot(...)
+    dp = Dispatcher()
+
+    dispatcher.attach(dp)  # Attach aiogram to forms dispatcher 
+
+    await dp.start_polling(bot)
 ```
 
 ## History
 All notable changes to this project will be documented in [CHANGELOG](CHANGELOG.md) file.
-

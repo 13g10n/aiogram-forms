@@ -3,4 +3,7 @@ aiogram-forms is an addition for aiogram
 which allows you to create different forms
 and process user input step by step easily.
 """
-from aiogram_forms import forms, fields, validators, base
+from .forms import *
+from .dispatcher import EntityDispatcher
+
+dispatcher = EntityDispatcher()
