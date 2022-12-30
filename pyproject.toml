@@ -8,7 +8,7 @@ readme = "README.md"
 homepage = "https://13g10n.com/docs/aiogram-forms"
 repository = "https://github.com/13g10n/aiogram-forms"
 classifiers = [
-	"Development Status :: 4 - Beta",
+	"Development Status :: 5 - Production/Stable",
 	"Environment :: Plugins",
 	"License :: OSI Approved :: MIT License",
 	"Programming Language :: Python :: 3.7",
