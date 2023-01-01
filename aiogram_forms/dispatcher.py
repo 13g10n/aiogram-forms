@@ -48,7 +48,7 @@ class EntityDispatcher:
 
     def get_entity_container(self, container_type: Type[EntityContainer], name: str):
         """Het entity container by name and type."""
-        entity_container = self._registry['forms'].get(name)
+        entity_container = self._registry.get('forms', {}).get(name)
         if entity_container:
             return entity_container
         raise ValueError(f'There are no entity container with name "{name}" of type "{container_type.__name__}"!')
