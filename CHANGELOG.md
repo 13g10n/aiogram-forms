@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2023-01-01
+
+### Changed
+- Added link to documentation website to `README.md`
+- Move coverage config from `.coveragerc` to `pyproject.toml`
+- Removed python 3.7 from supported versions and CI
+- More tests added, to cover 100% of codebase
+
+### Fixed
+- Fix `Development Status` PyPI classifier to be `Production/Stable`
+- Fixed unhandled error during `dispatcher.show` call without any form registered
+
 ## [1.0.0] - 2022-12-30
 ### Changed
 - Whole package was re-worked from scratch
