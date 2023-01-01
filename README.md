@@ -1,12 +1,15 @@
 # aiogram-forms
-![Project code coverage](https://img.shields.io/badge/coverage-96%25-green)
-![Project status](https://img.shields.io/pypi/status/aiogram-forms)
 ![PyPI](https://img.shields.io/pypi/v/aiogram-forms)
 ![GitHub](https://img.shields.io/github/license/13g10n/aiogram-forms)
+![Project status](https://img.shields.io/pypi/status/aiogram-forms)
+![Project code coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/aiogram-forms?label=installs)
 
 ## Introduction
 `aiogram-forms` is an addition for `aiogram` which allows you to create different forms and process user input step by step easily.
+
+## Documentation
+Documentation can be found [here](https://13g10n.com/docs/aiogram-forms).
 
 ## Installation
 ```bash
