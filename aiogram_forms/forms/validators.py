@@ -36,7 +36,7 @@ class RegexValidator:
     def __init__(self, regex: str) -> None:
         self.regex = re.compile(regex)
 
-    def __call__(self, value: str):
+    def __call__(self, value: str) -> None:
         match = self.regex.match(value)
         if not match:
             raise self.error

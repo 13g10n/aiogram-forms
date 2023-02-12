@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Dict, Any
 from aiogram import types
 
 if TYPE_CHECKING:
-    from .. import EntityDispatcher
+    from .. import EntityDispatcher  # type: ignore[attr-defined]
 
 
 class EntityManager(abc.ABC):  # pylint: disable=too-few-public-methods
@@ -24,5 +24,5 @@ class EntityManager(abc.ABC):  # pylint: disable=too-few-public-methods
         self.data = data
 
     @abc.abstractmethod
-    async def show(self, name: str):
+    async def show(self, name: str) -> None:
         """Start entity propagation."""

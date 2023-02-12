@@ -1,7 +1,7 @@
 """
 Forms manager.
 """
-from typing import Type, cast, Optional, Dict, Any, Union
+from typing import Type, cast, Optional, Dict, Any, Union, Tuple
 
 from aiogram.fsm.context import FSMContext
 
@@ -15,11 +15,11 @@ class FormsManager(EntityManager):
     """Forms manager."""
     state: FSMContext
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
         super().__init__(*args, **kwargs)
         self.state = self.data['state']
 
-    async def show(self, name: str):
+    async def show(self, name: str) -> None:
         entity_container: Type['Form'] = self._get_form_by_name(name)
 
         first_entity = cast(Field, entity_container.state.get_states()[0].entity)
@@ -46,10 +46,13 @@ class FormsManager(EntityManager):
 
         data = await self.state.get_data()
         form_data = data.get(form.__name__, {})
-        form_data.update({field.state.state.split(':')[-1]: value})
+        form_data.update({field.state.state.split(':')[-1]: value})  # type: ignore[union-attr]
         await self.state.update_data({form.__name__: form_data})
 
-        next_state_index = dict(zip(current_state.group, list(current_state.group)[1:]))
+        next_state_index = cast(
+            Dict['EntityState', Optional['EntityState']],
+            dict(zip(current_state.group, list(current_state.group)[1:]))  # type: ignore[arg-type]
+        )
         next_entity_state: Optional['EntityState'] = next_state_index.get(current_state)
         if next_entity_state:
             next_field: Field = cast(Field, next_entity_state.entity)
@@ -69,11 +72,17 @@ class FormsManager(EntityManager):
         """Get form data from store."""
         container: Type['Form'] = self._get_form_by_name(form) if isinstance(form, str) else form
         data = await self.state.get_data()
-        return data.get(container.__name__)
+        form_data = data.get(container.__name__)
+        if not form_data or not isinstance(form_data, dict):
+            return {}
+        return form_data
 
     def _get_form_by_name(self, name: str) -> Type['Form']:
         """Get registered form by name."""
-        entity_container: Type['Form'] = self._dispatcher.get_entity_container(Form, name)
+        entity_container: Type['Form'] = cast(
+            Type['Form'],
+            self._dispatcher.get_entity_container(Form, name)
+        )
 
         if not issubclass(entity_container, Form):
             raise ValueError(f'Entity registered with name {name} is not a valid form!')
