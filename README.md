@@ -40,7 +40,7 @@ class TestForm(Form):
 
     @classmethod
     async def callback(cls, message: types.Message, forms: FormsManager, **data) -> None:
-        data = await forms.get_data(TestForm)  # Get form data from state
+        data = await forms.get_data('test-form')  # Get form data from state
         await message.answer(text='Thank you!')
 
 @router.message(Command(commands=['start']))

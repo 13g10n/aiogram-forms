@@ -1,13 +1,12 @@
 """
 Forms manager.
 """
-from typing import Type, cast, Optional, Dict, Any
+from typing import Type, cast, Optional, Dict, Any, Union
 
 from aiogram.fsm.context import FSMContext
 
 from .base import Field, Form
 from ..errors import ValidationError
-from ..core.entities import EntityContainer
 from ..core.manager import EntityManager
 from ..core.states import EntityState
 
@@ -21,10 +20,7 @@ class FormsManager(EntityManager):
         self.state = self.data['state']
 
     async def show(self, name: str):
-        entity_container: Type['EntityContainer'] = self._dispatcher.get_entity_container(Form, name)
-
-        if not issubclass(entity_container, Form):
-            raise ValueError(f'Entity registered with name {name} is not a valid form!')
+        entity_container: Type['Form'] = self._get_form_by_name(name)
 
         first_entity = cast(Field, entity_container.state.get_states()[0].entity)
         await self.state.set_state(first_entity.state)
@@ -69,7 +65,16 @@ class FormsManager(EntityManager):
             await self.state.set_state(None)
             await form.callback(self.event, **self.data)
 
-    async def get_data(self, form: Type['Form']) -> Dict[str, Any]:
+    async def get_data(self, form: Union[Type['Form'], str]) -> Dict[str, Any]:
         """Get form data from store."""
+        container: Type['Form'] = self._get_form_by_name(form) if isinstance(form, str) else form
         data = await self.state.get_data()
-        return data.get(form.__name__)
+        return data.get(container.__name__)
+
+    def _get_form_by_name(self, name: str) -> Type['Form']:
+        """Get registered form by name."""
+        entity_container: Type['Form'] = self._dispatcher.get_entity_container(Form, name)
+
+        if not issubclass(entity_container, Form):
+            raise ValueError(f'Entity registered with name {name} is not a valid form!')
+        return entity_container

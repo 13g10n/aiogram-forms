@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock, Mock
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
@@ -30,20 +30,26 @@ def form(validation_error):
 
 
 @pytest.fixture
-def manager(form, event):
-    dispatcher = Mock()
-    dispatcher.get_entity_container = Mock(return_value=object)
+def dp(form, event):
+    dp = Mock()
+    dp.get_entity_container = Mock(return_value=form)
+    return dp
 
+
+@pytest.fixture
+def manager(form, event, dp):
     state = AsyncMock()
     state.get_state = AsyncMock(return_value=form.state.__all_states_names__[0])
 
-    return FormsManager(dispatcher, event, data=dict(state=state))
+    return FormsManager(dp, event, data=dict(state=state))
 
 
 @pytest.mark.asyncio
-async def test_manager_show_not_subclass_form(manager):
-    with pytest.raises(ValueError):
-        await manager.show('unregistered')
+async def test_manager_show_not_subclass_form(manager, dp):
+    with patch.object(dp, 'get_entity_container', return_value=object) as dp_mock:
+        with pytest.raises(ValueError):
+            await manager.show('unregistered')
+        dp_mock.assert_called_once_with(Form, 'unregistered')
 
 
 @pytest.mark.asyncio
@@ -53,7 +59,14 @@ async def test_manager_validation_raises(manager, form, validation_error):
 
 
 @pytest.mark.asyncio
-async def test_get_data(manager, form):
+async def test_get_data_by_form(manager, form):
     form_data = {'foo': '42'}
     manager.state.get_data = AsyncMock(return_value={form.__name__: form_data})
     assert await manager.get_data(form) == form_data
+
+
+@pytest.mark.asyncio
+async def test_get_data_by_name(manager, form):
+    form_data = {'foo': '42'}
+    manager.state.get_data = AsyncMock(return_value={form.__name__: form_data})
+    assert await manager.get_data('test') == form_data
