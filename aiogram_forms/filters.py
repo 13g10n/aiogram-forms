@@ -27,4 +27,5 @@ class EntityCallbackFilter(Filter):
         self._state = state
 
     async def __call__(self, *args: List[Any], **kwargs: Dict[str, Any]) -> bool:
-        return kwargs['event_update'].callback_query.data in [s.state for s in self._state.get_states()]  # type: ignore[attr-defined]
+        callback_query_data = kwargs['event_update'].callback_query.data  # type: ignore[attr-defined]
+        return callback_query_data in [s.state for s in self._state.get_states()]

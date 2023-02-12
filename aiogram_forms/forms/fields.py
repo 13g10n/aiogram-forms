@@ -1,7 +1,7 @@
 """
 Form fields.
 """
-from typing import Optional, List, Any, Dict, TYPE_CHECKING, Tuple, Union
+from typing import Optional, Any, Dict, TYPE_CHECKING, Tuple, Union
 
 from aiogram import types
 
