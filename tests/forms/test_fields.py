@@ -89,3 +89,34 @@ async def test_async_class_validator():
 
     field = fields.Field('Test', validators=[Validator()])
     await field.validate('value')
+
+
+@pytest.mark.asyncio
+async def test_choice_field_process_exists():
+    field = fields.ChoiceField('Status', choices=[
+        ('Published', 1),
+        ('Drafted', 0)
+    ])
+    value = await field.process('Published')
+    assert value == 1
+
+
+@pytest.mark.asyncio
+async def test_choice_field_process_not_exists():
+    field = fields.ChoiceField('Status', choices=[
+        ('Published', 1),
+        ('Drafted', 0)
+    ])
+    value = await field.process('Trashed')
+    assert value is None
+
+
+def test_choice_field_reply_keyboard():
+    field = fields.ChoiceField('Status', choices=[
+        ('Published', 1),
+        ('Drafted', 0)
+    ])
+    assert isinstance(field.reply_keyboard, ReplyKeyboardMarkup)
+
+    for option, keyboard_row in zip(field.choices, field.reply_keyboard.keyboard):
+        assert option[0] == keyboard_row[0].text
