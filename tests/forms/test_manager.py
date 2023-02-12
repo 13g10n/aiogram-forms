@@ -70,3 +70,10 @@ async def test_get_data_by_name(manager, form):
     form_data = {'foo': '42'}
     manager.state.get_data = AsyncMock(return_value={form.__name__: form_data})
     assert await manager.get_data('test') == form_data
+
+
+@pytest.mark.asyncio
+async def test_get_corrupted_data(manager, form):
+    form_data = 'CORRUPTED'
+    manager.state.get_data = AsyncMock(return_value={form.__name__: form_data})
+    assert await manager.get_data('test') == {}
