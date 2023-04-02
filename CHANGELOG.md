@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2023-04-02
+
+### Added
+- New `ChoiceField` field with `ChoiceValidator` validator
+
+### Changed
+- `FormsManager.get_data` can now accept form ID as param. Form class param marked as deprecated and will be removed in next releases.
+- Completed 100% tests coverage and full types coverage (mypy)
+
+### Fixed
+- Small fixes and updates for `README` example
+
 ## [1.0.1] - 2023-01-01
 
 ### Changed
