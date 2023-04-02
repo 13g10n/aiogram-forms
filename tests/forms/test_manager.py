@@ -66,6 +66,13 @@ async def test_get_data_by_form(manager, form):
 
 
 @pytest.mark.asyncio
+async def test_get_data_by_form_deprecated(manager, form):
+    manager.state.get_data = AsyncMock(return_value={form.__name__: {}})
+    with pytest.deprecated_call():
+        await manager.get_data(form)
+
+
+@pytest.mark.asyncio
 async def test_get_data_by_name(manager, form):
     form_data = {'foo': '42'}
     manager.state.get_data = AsyncMock(return_value={form.__name__: form_data})

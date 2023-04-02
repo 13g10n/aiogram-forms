@@ -1,6 +1,7 @@
 """
 Forms manager.
 """
+import warnings
 from typing import Type, cast, Optional, Dict, Any, Union
 
 from aiogram.fsm.context import FSMContext
@@ -70,7 +71,17 @@ class FormsManager(EntityManager):
 
     async def get_data(self, form: Union[Type['Form'], str]) -> Dict[str, Any]:
         """Get form data from store."""
-        container: Type['Form'] = self._get_form_by_name(form) if isinstance(form, str) else form
+        container: Type['Form']
+        if isinstance(form, str):
+            container = self._get_form_by_name(form)
+        else:
+            warnings.warn(
+                message='`FormsManager.get_data(...)` should accept form ID, '
+                        'form class passing will be deprecated in next releases.',
+                category=DeprecationWarning
+            )
+            container = form
+
         data = await self.state.get_data()
         form_data = data.get(container.__name__)
         if not form_data or not isinstance(form_data, dict):
