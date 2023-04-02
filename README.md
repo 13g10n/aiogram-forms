@@ -9,7 +9,7 @@
 `aiogram-forms` is an addition for `aiogram` which allows you to create different forms and process user input step by step easily.
 
 ## Documentation
-Documentation can be found [here](https://13g10n.com/docs/aiogram-forms).
+Documentation can be found [here](https://13g10n.com/en/docs/aiogram-forms).
 
 ## Installation
 ```bash
@@ -36,23 +36,32 @@ class TestForm(Form):
     )
     email = fields.EmailField('Email', help_text='We will send confirmation code.')
     phone = fields.PhoneNumberField('Phone number', share_contact=True)
-    value = fields.TextField('Value')
+    language = fields.ChoiceField('Language', choices=(
+        ('English', 'en'),
+        ('Russian', 'ru')
+    ))
 
     @classmethod
     async def callback(cls, message: types.Message, forms: FormsManager, **data) -> None:
-        data = await forms.get_data(TestForm)  # Get form data from state
-        await message.answer(text='Thank you!')
+        data = await forms.get_data('test-form')  # Get form data from state
+        await message.answer(
+            text=f'Thank you, {data["username"]}!',
+            reply_markup=types.ReplyKeyboardRemove()  # Use this for reset if last field contains keyboard
+        )
+
+router = Router()
 
 @router.message(Command(commands=['start']))
-async def command_start(message: Message, forms: FormsManager) -> None:
+async def command_start(message: types.Message, forms: FormsManager) -> None:
     await forms.show('test-form')  # Start form processing
 
 async def main():
-    bot = Bot(...)
     dp = Dispatcher()
+    dp.include_router(router)
 
     dispatcher.attach(dp)  # Attach aiogram to forms dispatcher 
 
+    bot = Bot(...)
     await dp.start_polling(bot)
 ```
 

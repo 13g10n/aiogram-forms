@@ -21,8 +21,8 @@ class EntityMiddleware(BaseMiddleware):  # pylint: disable=too-few-public-method
 
     async def __call__(
         self,
-        handler: Callable[[types.Message, Dict[str, Any]], Awaitable[Any]],
-        event: types.Message,
+        handler: Callable[[types.TelegramObject, Dict[str, Any]], Awaitable[Any]],
+        event: types.TelegramObject,
         data: Dict[str, Any]
     ) -> Any:
         data[FORMS_MANAGER_DI_KEY] = FormsManager(self.dispatcher, event, data)

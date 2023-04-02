@@ -96,3 +96,21 @@ def test_email_validator(value: str, exception):
 def test_phone_validator(value: str, exception):
     with exception:
         validators.PhoneNumberValidator()(value)
+
+
+@pytest.mark.parametrize(
+    'value,exception',
+    [
+        (1, nullcontext()),
+        ('1', pytest.raises(ValidationError)),
+        (4, pytest.raises(ValidationError))
+    ],
+    ids=[
+        'Passes when value in list',
+        'Fails when invalid type',
+        'Fails when not in list'
+    ]
+)
+def test_choices_validator(value: str, exception):
+    with exception:
+        validators.ChoiceValidator(choices=(1, 2, 3))(value)

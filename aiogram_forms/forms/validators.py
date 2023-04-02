@@ -3,6 +3,7 @@
 Form fields validators.
 """
 import re
+from typing import Tuple, Any
 
 from aiogram_forms.errors import ValidationError
 
@@ -36,7 +37,7 @@ class RegexValidator:
     def __init__(self, regex: str) -> None:
         self.regex = re.compile(regex)
 
-    def __call__(self, value: str):
+    def __call__(self, value: str) -> None:
         match = self.regex.match(value)
         if not match:
             raise self.error
@@ -62,3 +63,18 @@ class PhoneNumberValidator(RegexValidator):
 
     def __init__(self, regex: str = r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$'):
         super().__init__(regex)
+
+
+class ChoiceValidator:
+    """Choices validator.
+
+    Validates only on given values.
+    """
+    error = ValidationError('Value is not allowed.', code='invalid_choice')
+
+    def __init__(self, choices: Tuple[Any, ...]):
+        self.choices = choices
+
+    def __call__(self, value: str) -> None:
+        if value not in self.choices:
+            raise self.error

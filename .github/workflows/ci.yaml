@@ -19,5 +19,7 @@ jobs:
         run: poetry install
       - name: Lint project files with pylint
         run: poetry run pylint aiogram_forms
+      - name: Type check with mypy
+        run: poetry run mypy -p aiogram_forms
       - name: Run tests with pytest
         run: poetry run pytest tests

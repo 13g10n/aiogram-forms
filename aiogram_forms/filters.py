@@ -1,7 +1,7 @@
 """
 Aiogram events filters.
 """
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING, Type, Dict, Any, List
 
 from aiogram import types
 from aiogram.filters import Filter
@@ -17,8 +17,8 @@ class EntityStatesFilter(Filter):
         self._state = state
 
     async def __call__(self, message: types.Message, state: FSMContext) -> bool:
-        state = await state.get_state()
-        return state in [x.state for x in self._state]
+        current_state = await state.get_state()
+        return current_state in [x.state for x in self._state]
 
 
 class EntityCallbackFilter(Filter):
@@ -26,5 +26,6 @@ class EntityCallbackFilter(Filter):
     def __init__(self, state: Type['EntityContainerStatesGroup']) -> None:
         self._state = state
 
-    async def __call__(self, *args, **kwargs) -> bool:
-        return kwargs['event_update'].callback_query.data in [s.state for s in self._state.get_states()]
+    async def __call__(self, *args: List[Any], **kwargs: Dict[str, Any]) -> bool:
+        callback_query_data = kwargs['event_update'].callback_query.data  # type: ignore[attr-defined]
+        return callback_query_data in [s.state for s in self._state.get_states()]

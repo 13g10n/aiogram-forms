@@ -1,7 +1,7 @@
 """
 Entity dispatcher.
 """
-from typing import Type, MutableMapping, Dict, Any
+from typing import Type, MutableMapping, Dict, Any, Callable, Awaitable
 
 from aiogram import Dispatcher, Router, types
 
@@ -21,19 +21,19 @@ class EntityDispatcher:
     _dp: Dispatcher
     _router: Router
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._router = Router()
 
-    def attach(self, dp: Dispatcher):  # pylint: disable=invalid-name
+    def attach(self, dp: Dispatcher) -> None:  # pylint: disable=invalid-name
         """Attach aiogram dispatcher."""
         self._dp = dp
         self._dp.message.middleware(EntityMiddleware(self))
 
         dp.include_router(self._router)
 
-    def register(self, name: str):
+    def register(self, name: str) -> Callable[[Type[EntityContainer]], Type[EntityContainer]]:
         """Register entity with given name."""
-        def wrapper(container: Type[EntityContainer]):
+        def wrapper(container: Type[EntityContainer]) -> Type[EntityContainer]:
             EntityContainerStatesGroup.bind(container)
 
             for filter_type, filter_ in container.filters().items():
@@ -46,14 +46,16 @@ class EntityDispatcher:
             return container
         return wrapper
 
-    def get_entity_container(self, container_type: Type[EntityContainer], name: str):
+    def get_entity_container(self, container_type: Type[EntityContainer], name: str) -> Type[EntityContainer]:
         """Het entity container by name and type."""
         entity_container = self._registry.get('forms', {}).get(name)
         if entity_container:
             return entity_container
         raise ValueError(f'There are no entity container with name "{name}" of type "{container_type.__name__}"!')
 
-    def _get_entity_container_handler(self, container: Type['EntityContainer']):
+    def _get_entity_container_handler(
+            self, container: Type['EntityContainer']
+    ) -> Callable[..., Awaitable[None]]:
         """Get entity container event handler."""
         async def message_handler(event: types.Message, **data: Dict[str, Any]) -> None:
             """Entity container event handler, redirect to manager."""
