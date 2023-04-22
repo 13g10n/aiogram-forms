@@ -39,7 +39,7 @@ class EntityDispatcher:
             for filter_type, filter_ in container.filters().items():
                 getattr(self._router, str(filter_type.value))(filter_)(self._get_entity_container_handler(container))
 
-            if container.__name__ not in self._registry:
+            if 'forms' not in self._registry:
                 self._registry['forms'] = {}
 
             self._registry['forms'][name] = container

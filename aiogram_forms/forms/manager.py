@@ -25,7 +25,7 @@ class FormsManager(EntityManager):
 
         first_entity = cast(Field, entity_container.state.get_states()[0].entity)
         await self.state.set_state(first_entity.state)
-        await self.event.answer(first_entity.label, reply_markup=first_entity.reply_keyboard)
+        await self.event.answer(first_entity.label, reply_markup=first_entity.reply_keyboard)  # type: ignore[arg-type]
 
     async def handle(self, form: Type['Form']) -> None:
         """Handle form field."""
@@ -42,7 +42,7 @@ class FormsManager(EntityManager):
             await field.validate(value)
         except ValidationError as error:
             error_message = field.error_messages.get(error.code) or error.message
-            await self.event.answer(error_message, reply_markup=field.reply_keyboard)
+            await self.event.answer(error_message, reply_markup=field.reply_keyboard)  # type: ignore[arg-type]
             return
 
         data = await self.state.get_data()
@@ -52,7 +52,7 @@ class FormsManager(EntityManager):
 
         next_state_index = cast(
             Dict['EntityState', Optional['EntityState']],
-            dict(zip(current_state.group, list(current_state.group)[1:]))  # type: ignore[arg-type]
+            dict(zip(current_state.group, list(current_state.group)[1:]))
         )
         next_entity_state: Optional['EntityState'] = next_state_index.get(current_state)
         if next_entity_state:
@@ -60,9 +60,9 @@ class FormsManager(EntityManager):
             await self.state.set_state(next_field.state)
             await self.event.answer(
                 '\n'.join([
-                    next_field.label,
-                    next_field.help_text or ""
-                ] if next_field.help_text else [next_field.label]),
+                    str(next_field.label),
+                    str(next_field.help_text) or ""
+                ] if next_field.help_text else [str(next_field.label)]),
                 reply_markup=next_field.reply_keyboard
             )
         else:
