@@ -44,7 +44,7 @@ class Field(Entity):
         None
     ]:
         """Field keyboard."""
-        return types.ReplyKeyboardRemove()
+        return types.ReplyKeyboardRemove()  # type: ignore[call-arg]
 
     async def extract(self, message: types.Message) -> Optional[str]:
         """Extract field value from message object."""

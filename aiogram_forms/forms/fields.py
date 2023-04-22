@@ -63,7 +63,7 @@ class PhoneNumberField(Field):
         if self.share_contact:
             return types.ReplyKeyboardMarkup(
                 keyboard=[
-                    [types.KeyboardButton(text=self.label, request_contact=True)]
+                    [types.KeyboardButton(text=str(self.label), request_contact=True)]
                 ],
                 resize_keyboard=True
             )
