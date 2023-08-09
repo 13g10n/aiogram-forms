@@ -67,3 +67,7 @@ async def main():
 
 ## History
 All notable changes to this project will be documented in [CHANGELOG](CHANGELOG.md) file.
+
+## Versions
+For aiogram<3.0 please use aiogram-forms==0.3.0
+
