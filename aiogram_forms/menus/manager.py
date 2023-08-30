@@ -1,39 +1,28 @@
 """
 Menus manager.
 """
-from typing import Type, cast
+from typing import Type, TYPE_CHECKING
 
 from aiogram import types
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton
 
 from . import Menu, MenuItem
-from .. import utils, FormsManager
+from .. import utils
 from ..core.manager import EntityManager
+
+if TYPE_CHECKING:
+    from ..manager import Manager
 
 
 class MenusManager(EntityManager):
     """Menus manager."""
-    event: types.CallbackQuery
+    manager: 'Manager'
 
-    _args: tuple
-    _kwargs: dict
-
-    def __init__(self, dispatcher, event: types.Message, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
+    def __init__(self, manager: 'Manager', dispatcher, event: types.Message, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
         super().__init__(dispatcher, event, *args, **kwargs)
+        self.manager = manager
 
-        self.event = event
-
-        # TODO: rework, event can be any type message or callback query
-        if isinstance(event, types.CallbackQuery):
-            self._args = (dispatcher, self.event.message, *args)
-        else:
-            self._args = (dispatcher, event, *args)
-
-        self._kwargs = kwargs
-
-    async def show(self, name: str) -> None:
-        menu: Type[Menu] = self._get_menu_by_name(name)
-
+    async def show(self, menu: Type[Menu]) -> None:
         builder = InlineKeyboardBuilder()
 
         for _, menu_item in utils.get_attrs_of_type(menu, MenuItem):
@@ -43,29 +32,16 @@ class MenusManager(EntityManager):
             ))
 
         # TODO: custom message (menu title?)
-        await self.event.answer('Menu', reply_markup=builder.as_markup())
+        await self.message.answer('Menu', reply_markup=builder.as_markup())
 
     async def handle(self, menu: Type[Menu]) -> None:
         """Handle menu button."""
+        # TODO: refactor
         item = None
 
         for _, menu_item in utils.get_attrs_of_type(menu, MenuItem):
             if menu_item.state.state == self.event.data:
                 item = menu_item
-                print(f'>> {menu_item.label}')
-
-        item.action.menus = MenusManager(*self._args, **self._kwargs)
-        item.action.forms = FormsManager(*self._args, **self._kwargs)
 
         await self.event.answer()
-        await item.action.execute()
-
-    def _get_menu_by_name(self, name: str) -> Type[Menu]:
-        entity_container = cast(
-            Type[Menu],
-            self._dispatcher.get_entity_container(Menu, name)
-        )
-
-        if not issubclass(entity_container, Menu):
-            raise ValueError(f'Entity registered with name {name} is not a valid menu!')
-        return entity_container
+        await item.action.execute(self.manager)

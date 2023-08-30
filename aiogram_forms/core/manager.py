@@ -2,11 +2,13 @@
 Code entity manager.
 """
 import abc
-from typing import TYPE_CHECKING, Dict, Any
+from typing import TYPE_CHECKING, Dict, Any, Type
 
 from aiogram import types
 
+
 if TYPE_CHECKING:
+    from .entities import EntityContainer
     from .. import EntityDispatcher  # type: ignore[attr-defined]
 
 
@@ -24,5 +26,16 @@ class EntityManager(abc.ABC):  # pylint: disable=too-few-public-methods
         self.data = data
 
     @abc.abstractmethod
-    async def show(self, name: str) -> None:
+    async def show(self, container: Type['EntityContainer']) -> None:
         """Start entity propagation."""
+
+    @abc.abstractmethod
+    async def handle(self, container: Type['EntityContainer']) -> None:
+        """Handle entity callback."""
+
+    def get_container_by_name(self, name: str) -> Type['EntityContainer']:
+        return self._dispatcher.get_entity_container(name)
+
+    @property
+    def message(self) -> types.Message:
+        return self.event.message if isinstance(self.event, types.CallbackQuery) else self.event

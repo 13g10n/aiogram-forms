@@ -5,5 +5,6 @@ and process user input step by step easily.
 """
 from .forms import *
 from .dispatcher import EntityDispatcher
+from .manager import Manager
 
 dispatcher = EntityDispatcher()
