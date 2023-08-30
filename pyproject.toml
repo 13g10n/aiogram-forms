@@ -22,7 +22,7 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-aiogram = "^3.0.0b5"
+aiogram = "^3.0.0rc2"
 
 [tool.poetry.group.dev.dependencies]
 coverage = "^7.0.1"
