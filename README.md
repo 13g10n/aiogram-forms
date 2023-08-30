@@ -9,9 +9,14 @@
 `aiogram-forms` is an addition for `aiogram` which allows you to create different forms and process user input step by step easily.
 
 ## Documentation
-Documentation can be found [here](https://13g10n.com/en/docs/aiogram-forms).
+Documentation can be found [here](https://aiogram-forms.13g10n.com).
 
 ## Installation
+
+> **Warning!**
+> 
+> aiogram-forms uses aiogram 3, for earlier releases of aiogram please use [0.3.0](https://pypi.org/project/aiogram-forms/0.3.0/) version (not maintained).
+
 ```bash
 pip install aiogram-forms
 ```
