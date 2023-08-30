@@ -1,14 +1,21 @@
 """
 Entity dispatcher.
 """
+from collections import defaultdict
 from typing import Type, MutableMapping, Dict, Any, Callable, Awaitable
 
 from aiogram import Dispatcher, Router, types
 
 from .core.entities import EntityContainer
+from .core.manager import EntityManager
 from .core.states import EntityContainerStatesGroup
 from .forms import Form, FormsManager
+from .menus import Menu
+from .menus.manager import MenusManager
 from .middleware import EntityMiddleware
+
+
+
 
 
 class EntityDispatcher:
@@ -16,7 +23,7 @@ class EntityDispatcher:
     _registry: MutableMapping[
         str,
         MutableMapping[str, Type['EntityContainer']]
-    ] = {}
+    ] = defaultdict(dict)
 
     _dp: Dispatcher
     _router: Router
@@ -39,16 +46,14 @@ class EntityDispatcher:
             for filter_type, filter_ in container.filters().items():
                 getattr(self._router, str(filter_type.value))(filter_)(self._get_entity_container_handler(container))
 
-            if 'forms' not in self._registry:
-                self._registry['forms'] = {}
-
-            self._registry['forms'][name] = container
+            # TODO: move key to const
+            self._registry['forms' if issubclass(container, Form) else 'menus'][name] = container
             return container
         return wrapper
 
     def get_entity_container(self, container_type: Type[EntityContainer], name: str) -> Type[EntityContainer]:
         """Het entity container by name and type."""
-        entity_container = self._registry.get('forms', {}).get(name)
+        entity_container = self._registry['forms' if container_type is Form else 'menus'].get(name)
         if entity_container:
             return entity_container
         raise ValueError(f'There are no entity container with name "{name}" of type "{container_type.__name__}"!')
@@ -61,8 +66,10 @@ class EntityDispatcher:
             """Entity container event handler, redirect to manager."""
             if issubclass(container, Form):
                 manager = FormsManager(self, event, data)
-                await manager.handle(container)
+            elif issubclass(container, Menu):
+                manager = MenusManager(self, event, data)
             else:
                 raise RuntimeError(f'Container of type "{container.__class__.__name__}" is not supported!')
+            await manager.handle(container)
 
         return message_handler
