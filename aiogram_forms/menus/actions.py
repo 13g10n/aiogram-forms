@@ -33,4 +33,13 @@ class ShowMenu(Action):
         self.name = name
 
     async def execute(self, manager: 'Manager') -> None:
-        await manager.show(self.name)
+        await manager.show(self.name, replace=True)
+
+
+class Custom(Action):
+
+    def __init__(self, callable):
+        self.callable = callable
+
+    async def execute(self, manager: 'Manager') -> None:
+        await self.callable(manager)

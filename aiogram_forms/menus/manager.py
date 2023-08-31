@@ -4,6 +4,7 @@ Menus manager.
 from typing import Type, TYPE_CHECKING
 
 from aiogram import types
+from aiogram.types import ReplyKeyboardRemove
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton
 
 from . import Menu, MenuItem
@@ -22,7 +23,7 @@ class MenusManager(EntityManager):
         super().__init__(dispatcher, event, *args, **kwargs)
         self.manager = manager
 
-    async def show(self, menu: Type[Menu]) -> None:
+    async def show(self, menu: Type[Menu], replace: bool = False) -> None:
         builder = InlineKeyboardBuilder()
 
         for _, menu_item in utils.get_attrs_of_type(menu, MenuItem):
@@ -31,17 +32,19 @@ class MenusManager(EntityManager):
                 callback_data=str(menu_item.state.state)
             ))
 
-        # TODO: custom message (menu title?)
-        await self.message.answer('Menu', reply_markup=builder.as_markup())
+        if not replace:
+            await self.message.answer(await menu.title(), reply_markup=builder.as_markup())
+        else:
+            await self.message.edit_text(await menu.title())
+            await self.message.edit_reply_markup(reply_markup=builder.as_markup())
 
     async def handle(self, menu: Type[Menu]) -> None:
         """Handle menu button."""
-        # TODO: refactor
-        item = None
+        item = next(iter(
+            menu_item for _, menu_item
+            in utils.get_attrs_of_type(menu, MenuItem)
+            if menu_item.state.state == self.event.data
+        ))
 
-        for _, menu_item in utils.get_attrs_of_type(menu, MenuItem):
-            if menu_item.state.state == self.event.data:
-                item = menu_item
-
-        await self.event.answer()
+        await self.event.answer(text='...', reply_markup=ReplyKeyboardRemove())
         await item.action.execute(self.manager)

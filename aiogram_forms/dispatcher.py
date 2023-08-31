@@ -1,15 +1,36 @@
 """
 Entity dispatcher.
 """
-from collections import defaultdict
-from typing import Type, MutableMapping, Dict, Any, Callable, Awaitable
+from typing import Type, MutableMapping, Callable, Any, TYPE_CHECKING
 
-from aiogram import Dispatcher, Router, types
+from aiogram import Dispatcher, Router
+from aiogram.handlers import CallbackQueryHandler
 
 from .core.entities import EntityContainer
 from .core.states import EntityContainerStatesGroup
-from .manager import Manager
 from .middleware import EntityMiddleware
+
+if TYPE_CHECKING:
+    from aiogram_forms import Manager
+
+
+router = Router()
+
+
+class EventHandler(CallbackQueryHandler):
+    manager: 'Manager'
+    container: Type[EntityContainer]
+
+    def __init__(self, *args, manager: 'Manager', **kwargs):
+        super().__init__(*args, **kwargs)
+        self.manager = manager
+
+    async def handle(self) -> Any:
+        await self.manager.handle(self.container)
+
+    @classmethod
+    def for_container(cls, container: Type[EntityContainer]):
+        return type(f'Bound{cls.__name__}', (cls, ), {'container': container})
 
 
 class EntityDispatcher:
@@ -20,17 +41,16 @@ class EntityDispatcher:
     ] = {}
 
     _dp: Dispatcher
-    _router: Router
-
-    def __init__(self) -> None:
-        self._router = Router()
 
     def attach(self, dp: Dispatcher) -> None:  # pylint: disable=invalid-name
         """Attach aiogram dispatcher."""
         self._dp = dp
-        self._dp.message.middleware(EntityMiddleware(self))
 
-        dp.include_router(self._router)
+        # TODO: handle all types of events
+        self._dp.message.middleware(EntityMiddleware(self))
+        self._dp.callback_query.middleware(EntityMiddleware(self))
+
+        dp.include_router(router)
 
     def register(self, name: str) -> Callable[[Type[EntityContainer]], Type[EntityContainer]]:
         """Register entity with given name."""
@@ -38,7 +58,7 @@ class EntityDispatcher:
             EntityContainerStatesGroup.bind(container)
 
             for filter_type, filter_ in container.filters().items():
-                getattr(self._router, str(filter_type.value))(filter_)(self._get_entity_container_handler(container))
+                getattr(router, str(filter_type.value))(filter_)(EventHandler.for_container(container))
 
             self._registry[name] = container
             return container
@@ -50,13 +70,3 @@ class EntityDispatcher:
         if entity_container:
             return entity_container
         raise ValueError(f'There are no entity container with name "{name}"!')
-
-    def _get_entity_container_handler(
-            self, container: Type['EntityContainer']
-    ) -> Callable[..., Awaitable[None]]:
-        """Get entity container event handler."""
-        async def message_handler(event: types.Message, **data: Dict[str, Any]) -> None:
-            """Entity container event handler, redirect to manager."""
-            await Manager(self, event, data).handle(container)
-
-        return message_handler

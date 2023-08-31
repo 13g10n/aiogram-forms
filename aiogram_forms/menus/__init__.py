@@ -23,3 +23,8 @@ class Menu(EntityContainer):
         return {
             RouterHandlerType.CallbackQuery: EntityDataFilter(cls.state)
         }
+
+    @classmethod
+    async def title(cls) -> str:
+        """Menu title message customisation."""
+        return 'Menu'
